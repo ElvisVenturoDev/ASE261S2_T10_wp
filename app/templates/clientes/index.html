@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+
+{% block title %}Santa Clara | De nuestro campo a tu hogar{% endblock %}
+{% block meta_description %}Conoce productos lácteos frescos, naturales y nutritivos elaborados por-productores locales de Santa Clara.{% endblock %}
+
+{% block content %}
+{% include "clientes/partials/_carousel.html" %}
+
+{% include "clientes/partials/_values.html" %}
+
+<section class="mx-auto max-w-7xl px-6 py-20 lg:px-8" aria-labelledby="featured-title">
+    <div data-reveal class="flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
+        <div>
+            <p class="text-xs font-bold uppercase tracking-[0.25em] text-field" data-i18n="home.selection">Nuestra selección</p>
+            <h2 id="featured-title" class="mt-3 font-display text-4xl font-semibold text-navy sm:text-5xl" data-i18n="home.selectionTitle">Frescura que se nota</h2>
+            <p class="mt-4 max-w-2xl text-sm leading-6 text-slate-600" data-i18n="home.selectionDesc">Texturas suaves, sabores reales y el cuidado de productores que trabajan cada día con la familia.</p>
+        </div>
+        <a href="{{ url_for('productos.productos') }}" class="inline-flex shrink-0 items-center gap-2 text-xs font-bold uppercase tracking-wider text-navy transition hover:text-field" data-i18n="home.viewCatalog">Ver catálogo completo <span aria-hidden="true">→</span></a>
+    </div>
+
+    <div class="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+        {% for product in products %}
+        <article class="group overflow-hidden rounded-2xl border border-slate-100 bg-white shadow-soft transition-all duration-300 ease-out hover:-translate-y-1.5 hover:shadow-xl" data-featured-card>
+            <div class="aspect-[4/3] overflow-hidden bg-cream">
+                <img class="h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-105" src="{{ product.image }}" alt="{{ product.alt }}" width="600" height="450" loading="lazy">
+            </div>
+            <div class="p-5">
+                <p class="text-[10px] font-bold uppercase tracking-[0.18em] text-field">{{ product.category }}</p>
+                <h3 class="mt-2 font-display text-xl font-semibold text-navy transition-colors duration-300 group-hover:text-field">{{ product.name }}</h3>
+                <p class="mt-1 text-sm text-slate-500">{{ product.detail }}</p>
+                <div class="mt-4 flex items-center justify-between gap-3">
+                    <a href="{{ url_for('formulario.formulario', producto=product.name) }}" class="inline-flex items-center gap-2 text-xs font-bold text-navy transition-colors duration-300 hover:text-field">Pedir ahora <span aria-hidden="true">→</span></a>
+                    <button type="button" data-add-to-cart data-quick-add data-product-id="{{ product.id }}" data-product-name="{{ product.name }}" data-product-detail="{{ product.detail }}" data-product-price="{{ product.price }}" data-product-image="{{ product.image }}" class="product-order-link flex h-9 w-9 shrink-0 items-center justify-center rounded-full" aria-label="Agregar {{ product.name }} al carrito" title="Agregar al carrito">
+                        <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
+                    </button>
+                </div>
+            </div>
+        </article>
+        {% endfor %}
+    </div>
+</section>
+
+<section id="historia" class="mx-auto grid max-w-7xl gap-10 px-6 py-20 lg:grid-cols-2 lg:items-center lg:px-8" aria-labelledby="origin-title">
+    <div data-reveal="left">
+        <p class="text-xs font-bold uppercase tracking-[0.25em] text-field" data-i18n="home.identityBadge">Nuestra identidad</p>
+        <h2 id="origin-title" class="mt-3 font-display text-4xl font-semibold leading-tight text-navy sm:text-5xl" data-i18n="home.originTitle">Tradición que se renueva cada día</h2>
+        <p class="mt-6 text-base leading-7 text-slate-600" data-i18n="home.originText1">En Santa Clara creemos que una buena fuente de alimento comienza cerca. Trabajamos junto a productores locales, cuidamos nuestros animales y elaboramos productos pensados para las familias.</p>
+        <p class="mt-4 text-base leading-7 text-slate-600" data-i18n="home.originText2">La Asociación de Mujeres Mi Santa Clara convierte ese compromiso en una oportunidad compartida: mejores productos, ingresos justos y una comunidad más fuerte.</p>
+        <a href="{{ url_for('nosotros.nosotros') }}" class="mt-8 inline-flex items-center gap-3 rounded-full bg-navy px-6 py-3.5 text-xs font-bold uppercase tracking-wider text-white transition hover:bg-navy-dark" data-i18n="home.originCta">Conoce nuestra historia <span aria-hidden="true">→</span></a>
+    </div>
+
+    <div data-reveal="right" class="relative">
+        <img class="aspect-[4/3] w-full rounded-3xl object-cover shadow-xl" src="https://images.unsplash.com/photo-1500076656116-558758c991c1?auto=format&fit=crop&w=1200&q=85" alt="Productores trabajando en el campo" width="900" height="675" loading="lazy">
+        <div class="absolute -bottom-6 -left-4 max-w-xs rounded-2xl bg-white p-5 shadow-xl sm:-left-8">
+            <p class="font-display text-3xl text-field">100%</p>
+            <p class="mt-1 text-xs font-bold uppercase tracking-wider text-navy">Origen local y cercano</p>
+        </div>
+    </div>
+</section>
+
+<section data-reveal="zoom" class="mx-6 mb-20 overflow-hidden rounded-3xl bg-navy px-6 py-14 text-center text-white sm:px-10 lg:mx-auto lg:max-w-7xl">
+    <p class="text-xs font-bold uppercase tracking-[0.25em] text-lime-200" data-i18n="home.readyBadge">¿Ya sabes qué quieres?</p>
+    <h2 class="mx-auto mt-4 max-w-2xl font-display text-4xl font-semibold sm:text-5xl" data-i18n="home.readyTitle">Tu pedido empieza con un mensaje</h2>
+    <p class="mx-auto mt-5 max-w-xl text-sm leading-6 text-white/70" data-i18n="home.readyText">Cuéntanos qué necesitas y te ayudaremos a coordinar la entrega.</p>
+    <a href="{{ url_for('formulario.formulario') }}" class="mt-8 inline-flex items-center gap-2 rounded-full bg-field px-7 py-4 text-xs font-bold uppercase tracking-wider text-white transition hover:bg-field-dark" data-i18n="home.readyOrder">Realizar pedido <span aria-hidden="true">→</span></a>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script defer src="{{ url_for('static', filename='js/carousel.js') }}"></script>
+{% endblock %}

@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block title %}Pedido registrado | Santa Clara{% endblock %}
+
+{% block content %}
+<section class="mx-auto max-w-3xl px-6 py-20 text-center" data-order-complete>
+    <div class="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-emerald-100 text-4xl" aria-hidden="true">✓</div>
+    <p class="mx-auto mt-6 inline-flex rounded-full border border-emerald-200 bg-emerald-50 px-5 py-3 text-sm font-bold text-emerald-800" role="status" aria-live="polite" data-i18n="order.confirmSuccess">¡Pedido realizado con éxito!</p>
+    <h1 class="mt-4 font-display text-4xl text-navy sm:text-5xl" data-i18n="order.confirmTitle">¡Pedido realizado!</h1>
+    <p class="mx-auto mt-5 max-w-xl text-lg leading-relaxed text-slate-600" data-i18n="order.confirmText">Recibimos tu pedido. Un integrante de la <strong>Asociación de Mujeres Mi Santa Clara</strong> se comunicará contigo por WhatsApp para confirmar disponibilidad y coordinar la entrega.</p>
+    <div class="mt-8 flex flex-wrap justify-center gap-3">
+        <a class="rounded-full bg-navy px-6 py-3 text-sm font-bold text-white hover:bg-navy-dark" href="{{ url_for('inicio.index') }}" data-i18n="order.backHome">Volver al inicio</a>
+        <a class="rounded-full border border-slate-300 px-6 py-3 text-sm font-bold text-navy hover:bg-slate-50" href="{{ url_for('productos.productos') }}" data-i18n="order.keepBrowsing">Seguir explorando</a>
+    </div>
+</section>
+{% endblock %}

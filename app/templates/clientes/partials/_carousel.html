@@ -1,0 +1,149 @@
+{#
+  Hero principal de la página de inicio.
+  El carrusel vive dentro del hero (no en una sección aparte) para que la
+  propuesta de valor y las imágenes se vean apenas se entra al sitio.
+#}
+{% set carousel_slides = [
+    {
+        'image': 'https://images.unsplash.com/photo-1500595046743-cd271d694d30?auto=format&fit=crop&w=1600&q=88',
+        'alt': 'Campo verde con vacas pastando',
+        'kicker_key': 'home.hero.kicker',
+        'kicker': 'De nuestro campo a tu hogar',
+        'title_key': 'home.hero.title',
+        'title': 'Lo bueno de la naturaleza,',
+        'title_span_key': 'home.hero.titleSpan',
+        'title_span': 'lo llevamos a tu mesa.',
+        'text_key': 'home.hero.desc',
+        'text': 'Productos lácteos frescos, naturales y nutritivos, preparados cerca para ti y tu familia.',
+        'primary_href': url_for('productos.productos'),
+        'primary_key': 'home.hero.products',
+        'primary': 'Conoce nuestros productos',
+        'secondary_href': url_for('nosotros.nosotros'),
+        'secondary_key': 'home.hero.story',
+        'secondary': 'Nuestra historia'
+    },
+    {
+        'image': 'https://images.unsplash.com/photo-1550583724-b2692b85b150?auto=format&fit=crop&w=1600&q=88',
+        'alt': 'Productos lácteos frescos y naturales',
+        'kicker_key': 'home.hero.slide2Kicker',
+        'kicker': 'Frescura diaria',
+        'title_key': 'home.hero.slide2Title',
+        'title': 'Sabor auténtico,',
+        'title_span_key': 'home.hero.slide2TitleSpan',
+        'title_span': 'frescura de cada día.',
+        'text_key': 'home.hero.slide2Text',
+        'text': 'Nuestros productos llegan a tu mesa con la textura, frescura y sabor de un alimento bien cuidado.',
+        'primary_href': url_for('productos.productos'),
+        'primary_key': 'home.hero.slide2Cta',
+        'primary': 'Ver productos',
+        'secondary_href': url_for('nosotros.nosotros'),
+        'secondary_key': 'home.hero.slide2CtaAlt',
+        'secondary': 'Cómo trabajamos'
+    },
+    {
+        'image': 'https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=1600&q=88',
+        'alt': 'Selección de alimentos naturales',
+        'kicker_key': 'home.hero.slide3Kicker',
+        'kicker': 'Bienestar para todos',
+        'title_key': 'home.hero.slide3Title',
+        'title': 'Apoyas lo local,',
+        'title_span_key': 'home.hero.slide3TitleSpan',
+        'title_span': 'cuidas a tu familia.',
+        'text_key': 'home.hero.slide3Text',
+        'text': 'Cada compra acompaña a productores de Santa Clara y lleva a tu hogar alimentos naturales, cercanos y conscientes.',
+        'primary_href': url_for('formulario.formulario'),
+        'primary_key': 'home.hero.slide3Cta',
+        'primary': 'Hacer un pedido',
+        'secondary_href': url_for('contacto.contacto'),
+        'secondary_key': 'home.hero.slide3CtaAlt',
+        'secondary': 'Escríbenos'
+    }
+] %}
+
+<section class="relative isolate flex min-h-[620px] items-center overflow-hidden bg-navy lg:min-h-[680px]"
+         aria-labelledby="hero-title"
+         aria-roledescription="carrusel"
+         data-carousel
+         data-carousel-interval="6500">
+
+    <div class="flex min-h-[620px] transition-transform duration-500 ease-out motion-reduce:transition-none" data-carousel-track>
+        {% for slide in carousel_slides %}
+        <article class="relative flex w-full shrink-0 items-center overflow-hidden"
+                 data-carousel-slide
+                 role="group"
+                 aria-roledescription="diapositiva"
+                 aria-label="{{ loop.index }} de {{ carousel_slides | length }}"{% if not loop.first %} inert aria-hidden="true"{% endif %}>
+            <img class="absolute inset-0 h-full w-full object-cover object-center"
+                 src="{{ slide.image }}"
+                 alt="{{ slide.alt }}"
+                 width="1600"
+                 height="900"{% if loop.first %} fetchpriority="high"{% else %} loading="lazy"{% endif %}>
+            <div class="absolute inset-0 bg-gradient-to-r from-navy via-navy/80 to-navy/10"></div>
+            <div class="absolute inset-0 bg-gradient-to-t from-navy/50 via-transparent to-white/10"></div>
+
+            <div class="relative mx-auto w-full max-w-7xl px-6 py-24 lg:px-8">
+                <div class="max-w-2xl text-white">
+                    <p data-hero-item style="--hero-i:0" class="mb-5 flex items-center gap-3 text-xs font-bold uppercase tracking-[0.28em] text-lime-200">
+                        <span class="h-px w-10 bg-lime-200" aria-hidden="true"></span>
+                        <span data-i18n="{{ slide.kicker_key }}">{{ slide.kicker }}</span>
+                    </p>
+
+                    {% if loop.first %}
+                    <h1 id="hero-title" data-hero-item style="--hero-i:1" class="font-display text-5xl font-semibold leading-[0.98] sm:text-6xl lg:text-7xl">
+                        <span data-i18n="{{ slide.title_key }}">{{ slide.title }}</span>
+                        <span class="mt-2 block font-display italic text-lime-200" data-i18n="{{ slide.title_span_key }}">{{ slide.title_span }}</span>
+                    </h1>
+                    {% else %}
+                    <h2 data-hero-item style="--hero-i:1" class="font-display text-5xl font-semibold leading-[0.98] sm:text-6xl lg:text-7xl">
+                        <span data-i18n="{{ slide.title_key }}">{{ slide.title }}</span>
+                        <span class="mt-2 block font-display italic text-lime-200" data-i18n="{{ slide.title_span_key }}">{{ slide.title_span }}</span>
+                    </h2>
+                    {% endif %}
+
+                    <p data-hero-item style="--hero-i:2" class="mt-7 max-w-xl text-base leading-7 text-white/80 sm:text-lg" data-i18n="{{ slide.text_key }}">{{ slide.text }}</p>
+
+                    <div data-hero-item style="--hero-i:3" class="mt-9 flex flex-col gap-3 sm:flex-row">
+                        <a href="{{ slide.primary_href }}" class="inline-flex items-center justify-center gap-3 rounded-full bg-field px-7 py-4 text-xs font-bold uppercase tracking-wider text-white transition hover:bg-field-dark">
+                            <span data-i18n="{{ slide.primary_key }}">{{ slide.primary }}</span>
+                            <span aria-hidden="true">→</span>
+                        </a>
+                        <a href="{{ slide.secondary_href }}" class="inline-flex items-center justify-center gap-3 rounded-full border border-white/40 bg-white/10 px-7 py-4 text-xs font-bold uppercase tracking-wider text-white backdrop-blur transition hover:bg-white/20">
+                            <span data-i18n="{{ slide.secondary_key }}">{{ slide.secondary }}</span>
+                            <span aria-hidden="true">↗</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </article>
+        {% endfor %}
+    </div>
+
+    <div class="absolute inset-x-0 top-0 z-20 flex items-center justify-between gap-3 p-5 sm:p-7">
+        <div class="flex items-center gap-2" role="group" aria-label="Seleccionar diapositiva" data-carousel-indicators>
+            {% for slide in carousel_slides %}
+            <button type="button" class="group flex h-6 w-6 items-center justify-center rounded-full" data-carousel-to="{{ loop.index0 }}" aria-label="Ir a la diapositiva {{ loop.index }}"{% if loop.first %} data-active="true"{% endif %}>
+                <span class="h-2.5 w-2.5 rounded-full bg-white transition-all group-data-[active=true]:w-5 group-data-[active=true]:bg-lime-200" aria-hidden="true"></span>
+            </button>
+            {% endfor %}
+        </div>
+
+        <div class="flex items-center gap-3">
+            <p class="rounded-full bg-navy/35 px-4 py-2 text-xs font-bold tracking-wider text-white/75 backdrop-blur" data-carousel-counter aria-live="off">01 / {{ '%02d' % carousel_slides | length }}</p>
+            <button type="button" class="rounded-full border border-white/30 bg-navy/35 px-4 py-2 text-[10px] font-bold uppercase tracking-wider text-white backdrop-blur transition hover:bg-white hover:text-navy" data-carousel-toggle>Pausar</button>
+        </div>
+    </div>
+
+    <button type="button" class="absolute left-5 top-1/2 z-20 hidden h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full border border-white/30 bg-navy/40 text-white backdrop-blur transition hover:bg-white hover:text-navy lg:flex" data-carousel-prev aria-label="Diapositiva anterior">
+        <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m15 18-6-6 6-6"></path></svg>
+    </button>
+    <button type="button" class="absolute right-5 top-1/2 z-20 hidden h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full border border-white/30 bg-navy/40 text-white backdrop-blur transition hover:bg-white hover:text-navy lg:flex" data-carousel-next aria-label="Diapositiva siguiente">
+        <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m9 18 6-6-6-6"></path></svg>
+    </button>
+
+    <div data-hero-pop class="absolute bottom-10 right-10 hidden h-32 w-32 rotate-6 flex-col items-center justify-center rounded-full border-2 border-lime-200/80 bg-white/90 text-field shadow-xl lg:flex">
+        <strong class="font-display text-2xl" data-i18n="home.hero.natural">100%</strong>
+        <span class="text-[10px] font-bold tracking-[0.2em]" data-i18n="home.hero.naturalLabel">NATURAL</span>
+    </div>
+
+    <p class="sr-only" aria-live="polite" aria-atomic="true" data-carousel-status></p>
+</section>

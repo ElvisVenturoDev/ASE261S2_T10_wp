@@ -1,0 +1,115 @@
+{% extends "base.html" %}
+
+{% block title %}Productos | Santa Clara{% endblock %}
+{% block meta_description %}Descubre leche, yogurt, quesos, mantequilla y más productos naturales elaborados por la Asociación de Mujeres Mi Santa Clara.{% endblock %}
+
+{% block content %}
+<section class="relative isolate overflow-hidden bg-cream py-20 sm:py-24" aria-labelledby="products-title">
+    <img data-parallax class="absolute inset-0 -z-20 h-full w-full object-cover" src="https://images.unsplash.com/photo-1500595046743-cd271d694d30?auto=format&fit=crop&w=2000&q=88" alt="Campo con productos lácteos" width="2000" height="1000">
+    <div class="absolute inset-0 -z-10 bg-gradient-to-r from-navy via-navy/80 to-navy/20"></div>
+
+    <div class="mx-auto max-w-7xl px-6 text-white lg:px-8">
+        <div class="max-w-2xl">
+            <p data-hero-item style="--hero-i:0" class="text-xs font-bold uppercase tracking-[0.28em] text-lime-200">Nuestros productos</p>
+            <h1 id="products-title" data-hero-item style="--hero-i:1" class="mt-4 font-display text-5xl font-semibold leading-tight sm:text-6xl">Naturales, frescos y hechos con cariño</h1>
+            <p data-hero-item style="--hero-i:2" class="mt-6 max-w-xl text-base leading-7 text-white/75">Explora nuestra selección de productos lácteos elaborados cerca, con ingredientes simples y una frescura que se nota.</p>
+        </div>
+    </div>
+</section>
+
+<section id="catalogo" class="catalog-section scroll-mt-28 py-16 sm:py-20" aria-labelledby="catalog-title">
+    <div class="mx-auto max-w-7xl px-6 lg:px-8">
+        <div data-reveal class="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
+            <div>
+                <p class="text-xs font-bold uppercase tracking-[0.25em] text-field" data-i18n="catalog.badge">Catálogo</p>
+                <h2 id="catalog-title" class="mt-3 font-display text-4xl font-semibold text-navy sm:text-5xl" data-i18n="catalog.title">Encuentra tu favorito</h2>
+            </div>
+            <p class="catalog-count text-sm" aria-live="polite" data-catalog-count data-i18n="catalog.count">{{ products | length }} productos disponibles</p>
+        </div>
+
+        <div class="catalog-toolbar mt-9 grid gap-3 rounded-2xl border p-4 lg:grid-cols-[1fr_220px_220px]">
+            <label class="relative block">
+                <span class="sr-only" data-i18n="catalog.searchLabel">Buscar productos</span>
+                <svg class="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-3.8-3.8"></path></svg>
+                <input id="product-search" type="search" placeholder="Buscar por nombre..." data-i18n-placeholder="catalog.searchPlaceholder" class="h-12 w-full rounded-xl border border-slate-200 bg-slate-50 pl-12 pr-4 text-sm text-navy outline-none transition placeholder:text-slate-500 focus:border-field focus:bg-white focus:ring-4 focus:ring-field/10" autocomplete="off">
+            </label>
+
+            <label>
+                <span class="sr-only" data-i18n="catalog.categoryLabel">Filtrar por categoría</span>
+                <select id="category-filter" class="h-12 w-full rounded-xl border border-slate-200 bg-slate-50 px-4 text-sm text-navy outline-none transition focus:border-field focus:bg-white focus:ring-4 focus:ring-field/10">
+                    <option value="all" data-i18n="catalog.allCategories">Todas las categorías</option>
+                    <option value="leche" data-i18n="catalog.milk">Leche</option>
+                    <option value="yogurt" data-i18n="catalog.yogurt">Yogurt</option>
+                    <option value="queso" data-i18n="catalog.cheese">Quesos</option>
+                    <option value="mantequilla" data-i18n="catalog.butter">Mantequilla</option>
+                    <option value="crema" data-i18n="catalog.cream">Crema</option>
+                    <option value="otros" data-i18n="catalog.other">Otros</option>
+                </select>
+            </label>
+
+            <label>
+                <span class="sr-only" data-i18n="catalog.sortLabel">Ordenar productos</span>
+                <select id="sort-products" class="h-12 w-full rounded-xl border border-slate-200 bg-slate-50 px-4 text-sm text-navy outline-none transition focus:border-field focus:bg-white focus:ring-4 focus:ring-field/10">
+                    <option value="featured" data-i18n="catalog.sortFeatured">Destacados</option>
+                    <option value="name" data-i18n="catalog.sortName">Nombre A–Z</option>
+                    <option value="price" data-i18n="catalog.sortPriceAsc">Menor precio</option>
+                    <option value="price-desc" data-i18n="catalog.sortPriceDesc">Mayor precio</option>
+                </select>
+            </label>
+        </div>
+
+        <div class="catalog-tabs mt-6 flex gap-2 overflow-x-auto pb-2" role="group" aria-label="Filtrar productos por categoría" data-category-tabs>
+            <button type="button" class="shrink-0 rounded-full border border-transparent bg-navy px-5 py-2.5 text-xs font-bold text-white transition" data-category="all" aria-pressed="true" data-i18n="catalog.all">Todos</button>
+            <button type="button" class="shrink-0 rounded-full border border-slate-200 bg-white px-5 py-2.5 text-xs font-bold text-slate-600 transition hover:border-field hover:text-field" data-category="leche" aria-pressed="false" data-i18n="catalog.milk">Leche</button>
+            <button type="button" class="shrink-0 rounded-full border border-slate-200 bg-white px-5 py-2.5 text-xs font-bold text-slate-600 transition hover:border-field hover:text-field" data-category="yogurt" aria-pressed="false" data-i18n="catalog.yogurt">Yogurt</button>
+            <button type="button" class="shrink-0 rounded-full border border-slate-200 bg-white px-5 py-2.5 text-xs font-bold text-slate-600 transition hover:border-field hover:text-field" data-category="queso" aria-pressed="false" data-i18n="catalog.cheese">Quesos</button>
+            <button type="button" class="shrink-0 rounded-full border border-slate-200 bg-white px-5 py-2.5 text-xs font-bold text-slate-600 transition hover:border-field hover:text-field" data-category="mantequilla" aria-pressed="false" data-i18n="catalog.butter">Mantequilla</button>
+            <button type="button" class="shrink-0 rounded-full border border-slate-200 bg-white px-5 py-2.5 text-xs font-bold text-slate-600 transition hover:border-field hover:text-field" data-category="otros" aria-pressed="false" data-i18n="catalog.other">Otros</button>
+        </div>
+
+        <div class="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4" data-catalog-grid>
+            {% for product in products %}
+            <article class="catalog-card group relative overflow-hidden rounded-2xl border bg-white" data-catalog-card data-product-id="{{ product.id }}" data-category="{{ product.category }}" data-name="{{ product.name }}" data-price="{{ product.price }}">
+                <button type="button" class="absolute right-3 top-3 z-10 flex h-10 w-10 items-center justify-center rounded-full bg-white/95 text-xl text-slate-500 shadow-md transition hover:text-rose-500" data-favorite aria-pressed="false" aria-label="Añadir {{ product.name }} a favoritos">
+                    <span data-favorite-icon aria-hidden="true">♡</span>
+                </button>
+
+                <div class="aspect-[4/3] overflow-hidden bg-cream">
+                    <img class="h-full w-full object-cover" src="{{ product.image }}" alt="{{ product.alt }}" width="600" height="450" loading="lazy">
+                </div>
+
+                <div class="p-5">
+                    <p class="product-category text-[10px] font-bold uppercase tracking-[0.18em]">{{ product.category }}</p>
+                    <h3 class="mt-2 font-display text-xl font-semibold text-navy">{{ product.name }}</h3>
+                    <div class="mt-2 flex items-center justify-between gap-3">
+                        <p class="text-sm text-slate-500">{{ product.detail }}</p>
+                        <strong class="product-price text-sm">S/ {{ '%.2f' | format(product.price) }}</strong>
+                    </div>
+                    <button type="button" data-add-to-cart data-product-id="{{ product.id }}" data-product-name="{{ product.name }}" data-product-detail="{{ product.detail }}" data-product-price="{{ product.price }}" data-product-image="{{ product.image }}" class="product-order-link mt-5 flex w-full items-center justify-center rounded-full px-4 py-2.5 text-xs font-bold transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]">
+                        <svg class="mr-2 h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
+                        <span data-i18n="catalog.addToCart">Agregar al carrito</span>
+                    </button>
+                </div>
+            </article>
+            {% endfor %}
+        </div>
+
+        <div class="catalog-empty mt-12 rounded-2xl border border-dashed px-6 py-14 text-center" data-catalog-empty hidden>
+            <span class="text-4xl" aria-hidden="true">⌕</span>
+            <h3 class="mt-4 font-display text-2xl text-navy" data-i18n="catalog.emptyTitle">No encontramos productos</h3>
+            <p class="mt-2 text-sm text-slate-500" data-i18n="catalog.emptyMessage">Prueba con otra búsqueda o selecciona una categoría diferente.</p>
+            <button type="button" class="mt-5 rounded-full bg-navy px-5 py-2.5 text-xs font-bold text-white" data-catalog-reset data-i18n="catalog.clearFilters">Limpiar filtros</button>
+        </div>
+    </div>
+</section>
+
+<section class="bg-slate-50 py-20">
+    <div class="mx-auto max-w-7xl px-6 lg:px-8">
+        <div class="mx-auto mb-10 max-w-2xl text-center">
+            <p class="text-xs font-bold uppercase tracking-[0.25em] text-field">Nuestra garantía</p>
+            <h2 class="mt-3 font-display text-4xl font-semibold text-navy">Calidad que se apoya en valores</h2>
+        </div>
+        {% include "clientes/partials/_values.html" %}
+    </div>
+</section>
+{% endblock %}

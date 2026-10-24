@@ -1,0 +1,1268 @@
+@theme {
+    /* Tipografía: Plus Jakarta Sans (UI) + Playfair Display (títulos).
+       "DM Sans" queda como reserva cargada en la plantilla. */
+    --font-sans: "Plus Jakarta Sans", "DM Sans", ui-sans-serif, system-ui, -apple-system, sans-serif;
+    --font-display: "Playfair Display", ui-serif, Georgia, serif;
+
+    /* Paleta de marca: navy profundo + verde natural + superficies CÁLIDAS.
+       Contrastes verificados (WCAG 2.1) sobre las superficies reales:
+       ink/navy = AAA · verde (sobre blanco/papel/crema) = AA · slate-500/600 = AA/AAA. */
+    --color-navy: #0f2d4a;
+    --color-navy-dark: #081f36;
+    --color-field: #2a7034;
+    --color-field-dark: #1e5527;
+    --color-field-soft: #e7f2e9;
+    --color-cream: #f4ecdb;
+    --color-paper: #faf6ec;
+    --color-ink: #17293b;
+    --color-clay: #a85b39;
+
+    /* Acento "lime" realineado a un DORADO CÁLIDO (miel): complementario del
+       navy, aporta calidez premium y armoniza con la crema; evita el
+       amarillo-verdoso que chocaba con el verde. Al redefinir las variables,
+       se retocan los ~19 usos de lime-* sin tocar HTML.
+       Contraste sobre navy: #e9c986 = 8.8:1 (AAA). */
+    --color-lime-50: #faf4e4;
+    --color-lime-100: #f4e7c6;
+    --color-lime-200: #e9c986;
+    --color-lime-300: #e0bd76;
+
+    /* Neutros: la escala "slate" (gris FRÍO de Tailwind) se reemplaza por un
+       GREIGE CÁLIDO que armoniza con la crema, el navy y el dorado. Cambia de
+       golpe fondos de sección, bordes y textos secundarios (155 usos) sin tocar HTML.
+       Contraste verificado sobre papel: slate-500 = 5.65:1 (AA) · slate-600 = 8.1:1 (AAA). */
+    --color-slate-50: #f8f5ee;
+    --color-slate-100: #f1ece1;
+    --color-slate-200: #e5ded0;
+    --color-slate-300: #d3cab6;
+    --color-slate-400: #b0a68e;
+    --color-slate-500: #6f6551;
+    --color-slate-600: #564e3d;
+    --color-slate-700: #423b2e;
+    --color-slate-800: #2b271f;
+
+    /* Radios ligeramente más generosos para una silueta moderna. */
+    --radius-lg: 0.7rem;
+    --radius-xl: 0.9rem;
+    --radius-2xl: 1.15rem;
+    --radius-3xl: 1.6rem;
+
+    /* Sombras en dos capas (contacto + ambiente) con tinte del color de marca. */
+    --shadow-soft: 0 1px 2px rgba(16, 42, 67, 0.04), 0 8px 24px -10px rgba(16, 42, 67, 0.14);
+    --shadow-lift: 0 2px 4px rgba(16, 42, 67, 0.05), 0 20px 40px -14px rgba(16, 42, 67, 0.22),
+        0 8px 16px -10px rgba(30, 85, 39, 0.14);
+}
+
+:root {
+    /* Tokens de movimiento reutilizables. */
+    --ease-out-soft: cubic-bezier(0.2, 0.7, 0.2, 1);
+    /* Salida "expo": arranca rápido y asienta suave. Ideal para entradas y reveals. */
+    --ease-reveal: cubic-bezier(0.16, 1, 0.3, 1);
+    --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+    --dur-fast: 180ms;
+    --dur-base: 320ms;
+    --dur-slow: 700ms;
+}
+
+@layer base {
+    *,
+    *::before,
+    *::after {
+        box-sizing: border-box;
+    }
+
+    html {
+        scroll-behavior: smooth;
+    }
+
+    body {
+        min-width: 320px;
+        margin: 0;
+        background: var(--color-paper);
+        color: var(--color-ink);
+        font-family: var(--font-sans);
+        line-height: 1.65;
+        letter-spacing: -0.006em;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        text-rendering: optimizeLegibility;
+        transition:
+            background-color 0.45s var(--ease-out-soft),
+            color 0.45s var(--ease-out-soft);
+    }
+
+    /* Jerarquía tipográfica: interlineado y tracking ópticos por nivel.
+       Va en la capa base para que utilities como leading-* / tracking-*
+       sigan pudiendo sobrescribirla donde haga falta. */
+    h1,
+    h2,
+    h3,
+    h4 {
+        line-height: 1.14;
+        letter-spacing: -0.02em;
+        text-wrap: balance;
+    }
+
+    h1 {
+        line-height: 1.06;
+        letter-spacing: -0.028em;
+    }
+
+    p {
+        text-wrap: pretty;
+    }
+
+    a,
+    button,
+    input,
+    select,
+    textarea {
+        -webkit-tap-highlight-color: transparent;
+    }
+
+    button,
+    select {
+        cursor: pointer;
+    }
+
+    img {
+        display: block;
+        max-width: 100%;
+    }
+
+    :focus-visible {
+        outline: 2px solid currentColor;
+        outline-offset: 2px;
+    }
+
+    ::selection {
+        background: var(--color-lime-100);
+        color: var(--color-navy);
+    }
+}
+
+/* Transición de color compartida para que el cambio de tema no sea brusco. */
+#mobile-nav,
+#cart-panel,
+.chatbot-panel,
+.catalog-toolbar,
+.catalog-count,
+.catalog-empty,
+.product-category,
+.product-price {
+    transition:
+        background-color 0.45s var(--ease-out-soft),
+        border-color 0.45s var(--ease-out-soft),
+        color 0.45s var(--ease-out-soft);
+}
+
+/* Encabezado: eleva su sombra al hacer scroll (la clase la pone animaciones.js). */
+header[data-site-header] {
+    transition:
+        background-color 0.45s var(--ease-out-soft),
+        border-color 0.45s var(--ease-out-soft),
+        box-shadow 0.45s var(--ease-out-soft);
+}
+
+header[data-site-header].is-scrolled {
+    box-shadow: 0 14px 34px rgba(16, 47, 85, 0.09);
+}
+
+/* ===== Modo oscuro ===== */
+
+body.dark-mode {
+    background: #0c1a2b;
+    color: #e6edf5;
+    color-scheme: dark;
+}
+
+body.dark-mode .bg-white,
+body.dark-mode [class~="bg-white/90"],
+body.dark-mode [class~="bg-white/95"],
+body.dark-mode header,
+body.dark-mode #mobile-nav,
+body.dark-mode #cart-panel,
+body.dark-mode .catalog-toolbar {
+    background-color: #132437;
+}
+
+body.dark-mode .bg-slate-50,
+body.dark-mode .bg-slate-100,
+body.dark-mode .bg-cream,
+body.dark-mode .bg-lime-50,
+body.dark-mode .bg-lime-100,
+body.dark-mode .bg-emerald-50,
+body.dark-mode .bg-emerald-100,
+body.dark-mode .bg-sky-100,
+body.dark-mode .bg-amber-100 {
+    background-color: #1b3047;
+}
+
+body.dark-mode .catalog-section {
+    background: linear-gradient(180deg, #0f2438 0%, #1b2b1f 100%);
+}
+
+body.dark-mode .catalog-section #catalog-title,
+body.dark-mode .text-navy,
+body.dark-mode .text-ink,
+body.dark-mode .text-slate-800 {
+    color: #dbeafe;
+}
+
+body.dark-mode .text-slate-500,
+body.dark-mode .text-slate-600,
+body.dark-mode .text-slate-700 {
+    color: #b8c7da;
+}
+
+body.dark-mode .text-field,
+body.dark-mode .text-field-dark,
+body.dark-mode .text-emerald-800,
+body.dark-mode .text-sky-700,
+body.dark-mode .text-amber-700 {
+    color: #a9d7b4;
+}
+
+body.dark-mode .border-slate-100,
+body.dark-mode .border-slate-200,
+body.dark-mode .border-slate-300,
+body.dark-mode [data-catalog-card],
+body.dark-mode [data-featured-card] {
+    border-color: #2c4661;
+}
+
+body.dark-mode .catalog-count,
+body.dark-mode .catalog-empty {
+    border-color: #2c4661;
+    background: #132437;
+    color: #d1fae5;
+}
+
+body.dark-mode .product-category {
+    background: #24382a;
+    color: #cbe3a8;
+}
+
+body.dark-mode .product-price {
+    background: #3a2f1a;
+    color: #fde68a;
+}
+
+body.dark-mode input,
+body.dark-mode select,
+body.dark-mode textarea {
+    border-color: #2c4661;
+    background-color: #0f2033;
+    color: #e6edf5;
+}
+
+body.dark-mode input::placeholder,
+body.dark-mode textarea::placeholder {
+    color: #8ea2ba;
+}
+
+body.dark-mode [class~="hover:bg-slate-50"]:hover,
+body.dark-mode [class~="hover:bg-slate-100"]:hover {
+    background-color: #24384f;
+}
+
+body.dark-mode #toastContainer > div {
+    border-color: #2c4661;
+    background-color: #132437;
+    color: #e6edf5;
+}
+
+body.dark-mode header[data-site-header].is-scrolled {
+    box-shadow: 0 14px 34px rgba(0, 0, 0, 0.45);
+}
+
+/* ===== Carrusel ===== */
+
+[data-carousel] {
+    touch-action: pan-y;
+}
+
+[data-carousel-track] {
+    display: flex;
+    width: 100%;
+    will-change: transform;
+}
+
+[data-carousel-slide] {
+    flex: 0 0 100%;
+}
+
+[data-carousel-slide][inert] {
+    pointer-events: none;
+}
+
+/* Puntos indicadores: se animan con scale (compositor) en lugar de width (layout).
+   El ancho real queda fijo y el efecto "píldora" se logra con scaleX. */
+[data-carousel-to] > span {
+    width: 1.25rem;
+    scale: 0.5 1;
+    transition:
+        scale 0.35s var(--ease-out-soft),
+        background-color 0.3s ease;
+}
+
+[data-carousel-to][data-active="true"] > span {
+    scale: 1 1;
+}
+
+@media (max-width: 640px) {
+    [data-carousel-track] {
+        min-height: 500px;
+    }
+
+    [data-carousel-slide] {
+        min-height: 500px;
+    }
+}
+
+/* ===== Tarjetas de producto ===== */
+
+@keyframes card-enter {
+    from {
+        opacity: 0;
+        transform: translate3d(0, 14px, 0);
+    }
+    to {
+        opacity: 1;
+        transform: translate3d(0, 0, 0);
+    }
+}
+
+[data-catalog-card],
+[data-featured-card] {
+    border-color: var(--color-slate-200);
+    box-shadow: 0 8px 22px rgba(28, 55, 45, 0.07);
+    animation: card-enter 0.6s var(--ease-reveal) both;
+    /* Se anima con las propiedades individuales (translate/scale) para no chocar
+       con las utilidades de Tailwind v4 y mantenerse en el compositor. */
+    translate: 0 0;
+    transition:
+        translate var(--dur-base) var(--ease-out-soft),
+        scale var(--dur-base) var(--ease-out-soft),
+        box-shadow var(--dur-base) var(--ease-out-soft),
+        border-color var(--dur-fast) ease;
+}
+
+[data-catalog-card]:nth-child(1),
+[data-featured-card]:nth-child(1) { animation-delay: 0ms; }
+[data-catalog-card]:nth-child(2),
+[data-featured-card]:nth-child(2) { animation-delay: 50ms; }
+[data-catalog-card]:nth-child(3),
+[data-featured-card]:nth-child(3) { animation-delay: 100ms; }
+[data-catalog-card]:nth-child(4),
+[data-featured-card]:nth-child(4) { animation-delay: 150ms; }
+[data-catalog-card]:nth-child(5) { animation-delay: 200ms; }
+[data-catalog-card]:nth-child(6) { animation-delay: 250ms; }
+[data-catalog-card]:nth-child(7) { animation-delay: 300ms; }
+[data-catalog-card]:nth-child(8) { animation-delay: 350ms; }
+[data-catalog-card]:nth-child(9) { animation-delay: 400ms; }
+[data-catalog-card]:nth-child(10) { animation-delay: 450ms; }
+
+[data-catalog-card]:hover,
+[data-catalog-card]:focus-within,
+[data-featured-card]:hover,
+[data-featured-card]:focus-within {
+    translate: 0 -6px;
+    box-shadow: var(--shadow-lift);
+    border-color: color-mix(in srgb, var(--color-field) 30%, var(--color-slate-200));
+}
+
+/* ===== Catálogo ===== */
+
+.catalog-section {
+    background: linear-gradient(180deg, #edf2e4 0%, var(--color-paper) 100%);
+}
+
+.catalog-section #catalog-title {
+    color: var(--color-navy);
+}
+
+.catalog-count {
+    padding: 0.6rem 0.85rem;
+    border: 1px solid color-mix(in srgb, var(--color-field) 22%, white);
+    border-radius: 999px;
+    background: var(--color-field-soft);
+    color: var(--color-field-dark);
+    font-weight: 700;
+}
+
+.catalog-toolbar {
+    border-color: var(--color-slate-200);
+    background: rgba(250, 246, 236, 0.94);
+    box-shadow: 0 12px 30px rgba(26, 58, 92, 0.09);
+    backdrop-filter: blur(10px);
+}
+
+.catalog-tabs [data-category] {
+    border-radius: 999px;
+    font-weight: 700;
+    transition:
+        background-color 0.3s ease,
+        color 0.3s ease,
+        border-color 0.3s ease,
+        transform 0.35s var(--ease-out-soft),
+        box-shadow 0.3s ease;
+}
+
+.catalog-tabs [data-category][aria-pressed="true"] {
+    border-color: var(--color-navy-dark);
+    background: var(--color-navy);
+    color: #fff;
+    box-shadow: 0 5px 14px rgba(26, 58, 92, 0.24);
+}
+
+.catalog-tabs [data-category]:hover {
+    box-shadow: 0 5px 14px rgba(90, 122, 58, 0.18);
+}
+
+.product-category {
+    display: inline-flex;
+    align-items: center;
+    min-height: 1.5rem;
+    padding: 0.25rem 0.6rem;
+    border-radius: 999px;
+    background: var(--color-field-soft);
+    color: var(--color-field-dark);
+}
+
+.product-price {
+    flex: 0 0 auto;
+    padding: 0.45rem 0.6rem;
+    border-radius: 0.65rem;
+    background: var(--color-lime-100);
+    color: #6f4d10;
+}
+
+.product-order-link {
+    border: 1px solid var(--color-field);
+    background: var(--color-field);
+    color: #fff;
+    translate: 0 0;
+    transition:
+        background-color 0.35s ease,
+        border-color 0.35s ease,
+        box-shadow 0.35s ease,
+        translate 0.35s var(--ease-out-soft),
+        scale 0.35s var(--ease-out-soft),
+        transform 0.35s var(--ease-out-soft);
+}
+
+.product-order-link:hover {
+    translate: 0 -2px;
+    border-color: var(--color-field-dark);
+    background: var(--color-field-dark);
+    box-shadow: 0 8px 16px rgba(30, 85, 39, 0.22);
+}
+
+.catalog-empty {
+    border-color: var(--color-slate-200);
+    background: rgba(250, 246, 236, 0.88);
+}
+
+@keyframes favorite-pop {
+    50% {
+        scale: 1.2;
+    }
+}
+
+[data-favorite].is-favorited {
+    animation: favorite-pop 0.35s var(--ease-spring);
+}
+
+[data-catalog-card] img,
+[data-featured-card] img {
+    scale: 1;
+    transition: scale var(--dur-slow) var(--ease-out-soft);
+}
+
+[data-catalog-card]:hover img,
+[data-featured-card]:hover img {
+    scale: 1.05;
+}
+
+[data-favorite] {
+    scale: 1;
+    transition:
+        scale 0.3s var(--ease-spring),
+        color 0.25s ease,
+        background-color 0.25s ease;
+}
+
+[data-favorite]:hover {
+    scale: 1.12;
+}
+
+[data-favorite]:active {
+    scale: 0.9;
+}
+
+[data-category-tabs] [data-category] {
+    transition:
+        background-color 0.3s ease,
+        color 0.3s ease,
+        border-color 0.3s ease,
+        transform 0.25s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+[data-category-tabs] [data-category]:hover {
+    transform: translateY(-2px);
+}
+
+#product-search,
+#category-filter,
+#sort-products {
+    transition:
+        border-color 0.3s ease,
+        background-color 0.3s ease,
+        box-shadow 0.3s ease;
+}
+
+[data-catalog-card] a[href*="formulario"],
+[data-featured-card] a[href*="formulario"] {
+    transition:
+        background-color 0.3s ease,
+        color 0.3s ease,
+        transform 0.25s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+        box-shadow 0.3s ease;
+}
+
+[data-catalog-card] a[href*="formulario"]:hover,
+[data-featured-card] a[href*="formulario"]:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(26, 58, 92, 0.15);
+}
+
+/* ===== Chatbot ===== */
+
+.chatbot-launcher {
+    position: fixed;
+    z-index: 60;
+    bottom: 1.25rem;
+    left: 1.25rem;
+    display: grid;
+    width: 3.25rem;
+    height: 3.25rem;
+    place-items: center;
+    border: 0;
+    border-radius: 50%;
+    background: var(--color-field);
+    color: #fff;
+    box-shadow: 0 8px 24px rgba(16, 47, 85, 0.24);
+    transition:
+        transform var(--dur-fast) var(--ease-out-soft),
+        background-color var(--dur-fast) ease,
+        box-shadow var(--dur-fast) ease;
+}
+
+.chatbot-launcher:hover {
+    transform: translateY(-2px);
+    background: var(--color-field-dark);
+    box-shadow: 0 12px 28px rgba(16, 47, 85, 0.3);
+}
+
+.chatbot-launcher svg {
+    width: 1.5rem;
+    height: 1.5rem;
+}
+
+.whatsapp-float {
+    bottom: 5rem;
+    left: 1.25rem;
+    right: auto;
+    scale: 1;
+    transition:
+        transform var(--dur-base) var(--ease-out-soft),
+        scale var(--dur-base) var(--ease-out-soft),
+        box-shadow var(--dur-base) ease;
+}
+
+.chatbot-panel {
+    position: fixed;
+    z-index: 60;
+    bottom: 5.25rem;
+    left: 1.25rem;
+    display: flex;
+    width: min(23.75rem, calc(100vw - 2rem));
+    max-height: min(40rem, calc(100dvh - 7rem));
+    flex-direction: column;
+    overflow: hidden;
+    border: 1px solid var(--color-slate-200);
+    border-radius: 1rem;
+    background: #fff;
+    color: var(--color-ink);
+    box-shadow: 0 18px 55px rgba(16, 47, 85, 0.22);
+}
+
+.chatbot-panel[hidden] {
+    display: none;
+}
+
+.chatbot-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 1rem 1.1rem;
+    background: var(--color-navy);
+    color: #fff;
+}
+
+.chatbot-header h2 {
+    font-size: 1rem;
+    font-weight: 700;
+}
+
+.chatbot-header p {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    margin-top: 0.2rem;
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 0.75rem;
+}
+
+.chatbot-status {
+    width: 0.45rem;
+    height: 0.45rem;
+    border-radius: 50%;
+    background: #86efac;
+}
+
+.chatbot-close {
+    display: grid;
+    width: 2rem;
+    height: 2rem;
+    flex: 0 0 auto;
+    place-items: center;
+    border: 1px solid rgba(255, 255, 255, 0.35);
+    border-radius: 50%;
+    color: #fff;
+}
+
+.chatbot-close svg,
+.chatbot-form button svg {
+    width: 1.1rem;
+    height: 1.1rem;
+}
+
+.chatbot-messages {
+    display: flex;
+    min-height: 12rem;
+    flex: 1 1 auto;
+    flex-direction: column;
+    gap: 0.75rem;
+    overflow-y: auto;
+    padding: 1rem;
+    overscroll-behavior: contain;
+}
+
+.chatbot-message {
+    max-width: 88%;
+    padding: 0.7rem 0.85rem;
+    border-radius: 0.9rem;
+    font-size: 0.875rem;
+    line-height: 1.5;
+    overflow-wrap: anywhere;
+    animation: message-in var(--dur-base) var(--ease-out-soft) both;
+}
+
+.chatbot-message--assistant {
+    align-self: flex-start;
+    border: 1px solid var(--color-slate-200);
+    border-bottom-left-radius: 0.25rem;
+    background: var(--color-slate-100);
+    color: var(--color-ink);
+}
+
+.chatbot-message--user {
+    align-self: flex-end;
+    border-bottom-right-radius: 0.25rem;
+    background: var(--color-navy);
+    color: #fff;
+}
+
+.chatbot-message a {
+    display: inline-flex;
+    margin: 0.55rem 0.45rem 0 0;
+    padding: 0.4rem 0.65rem;
+    border-radius: 999px;
+    background: var(--color-slate-200);
+    color: var(--color-navy);
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-decoration: none;
+    transition:
+        background-color 0.25s ease,
+        transform 0.25s var(--ease-out-soft);
+}
+
+.chatbot-message a:hover {
+    background: var(--color-slate-300);
+    transform: translateY(-1px);
+}
+
+.chatbot-suggestions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.45rem;
+    padding: 0 1rem 0.85rem;
+}
+
+.chatbot-suggestions[hidden] {
+    display: none;
+}
+
+.chatbot-suggestions button {
+    padding: 0.45rem 0.65rem;
+    border: 1px solid color-mix(in srgb, var(--color-field) 22%, white);
+    border-radius: 999px;
+    background: var(--color-field-soft);
+    color: var(--color-field-dark);
+    font-size: 0.75rem;
+    font-weight: 600;
+    transition:
+        background-color 0.25s ease,
+        transform 0.25s var(--ease-out-soft);
+}
+
+.chatbot-suggestions button:hover {
+    background: color-mix(in srgb, var(--color-field-soft) 70%, var(--color-field) 30%);
+    transform: translateY(-1px);
+}
+
+.chatbot-form {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1rem;
+    border-top: 1px solid var(--color-slate-200);
+}
+
+.chatbot-form input {
+    min-width: 0;
+    height: 2.75rem;
+    flex: 1 1 auto;
+    padding: 0 0.85rem;
+    border: 1px solid var(--color-slate-300);
+    border-radius: 0.75rem;
+    background: #fff;
+    color: var(--color-ink);
+    font-size: 0.875rem;
+}
+
+.chatbot-form input:focus {
+    border-color: var(--color-field);
+    outline: 2px solid rgba(90, 122, 58, 0.2);
+}
+
+.chatbot-form button {
+    display: grid;
+    width: 2.75rem;
+    height: 2.75rem;
+    flex: 0 0 auto;
+    place-items: center;
+    border-radius: 0.75rem;
+    background: var(--color-field);
+    color: #fff;
+    transition: background-color 0.25s ease;
+}
+
+.chatbot-form button:hover {
+    background: var(--color-field-dark);
+}
+
+.chatbot-disclaimer {
+    padding: 0 1rem 0.75rem;
+    color: var(--color-slate-500);
+    font-size: 0.6875rem;
+    text-align: center;
+}
+
+body.dark-mode .chatbot-panel {
+    border-color: #2c4661;
+    background: #132437;
+    color: #e6edf5;
+}
+
+body.dark-mode .chatbot-message--assistant {
+    border-color: #2c4661;
+    background: #1b3047;
+    color: #e2e8f0;
+}
+
+body.dark-mode .chatbot-message a {
+    background: #24384f;
+    color: #dbeafe;
+}
+
+body.dark-mode .chatbot-suggestions button {
+    border-color: #2c4661;
+    background: #1b3047;
+    color: #d1fae5;
+}
+
+body.dark-mode .chatbot-form {
+    border-color: #2c4661;
+}
+
+body.dark-mode .chatbot-form input {
+    border-color: #2c4661;
+    background: #0f2033;
+    color: #e6edf5;
+}
+
+body.dark-mode .chatbot-disclaimer {
+    color: #8ea2ba;
+}
+
+@media (max-width: 480px) {
+    .whatsapp-float {
+        bottom: 5rem;
+        left: 1rem;
+    }
+
+    .chatbot-launcher {
+        bottom: 1rem;
+        left: 1rem;
+    }
+
+    .chatbot-panel {
+        right: 1rem;
+        bottom: 5rem;
+        left: 1rem;
+        width: auto;
+        max-height: min(34rem, calc(100dvh - 6rem));
+    }
+}
+
+/* ===== Animaciones (Sprint 8 · US3) ===== */
+
+/* 1. Scroll reveal: [data-reveal="up|left|right|zoom"] + .is-visible (lo pone animaciones.js).
+      Solo se oculta si el <head> activó .anim-ready (JS disponible y sin reduced-motion). */
+.anim-ready [data-reveal] {
+    opacity: 0;
+    transform: translate3d(0, 24px, 0);
+    /* Nota: nada de will-change aquí. Promover N elementos a la vez fuerza
+       muchísimas capas de compositor; la transición de transform/opacity ya
+       se acelera por GPU cuando arranca. */
+    transition:
+        opacity var(--dur-slow) var(--ease-reveal) var(--reveal-delay, 0ms),
+        transform var(--dur-slow) var(--ease-reveal) var(--reveal-delay, 0ms);
+}
+
+.anim-ready [data-reveal="left"] {
+    transform: translate3d(-36px, 0, 0);
+}
+
+.anim-ready [data-reveal="right"] {
+    transform: translate3d(36px, 0, 0);
+}
+
+.anim-ready [data-reveal="zoom"] {
+    transform: scale(0.94);
+}
+
+.anim-ready [data-reveal].is-visible {
+    opacity: 1;
+    transform: none;
+}
+
+/* 2. Barra de progreso de scroll: --scroll-progress (0 a 1) lo actualiza animaciones.js. */
+.scroll-progress {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 70;
+    width: 100%;
+    height: 3px;
+    border-radius: 0 999px 999px 0;
+    background: linear-gradient(90deg, var(--color-field), var(--color-lime-200));
+    box-shadow: 0 0 10px rgba(233, 201, 134, 0.45);
+    transform: scaleX(var(--scroll-progress, 0));
+    transform-origin: left center;
+    pointer-events: none;
+}
+
+.scroll-progress[hidden] {
+    display: none;
+}
+
+/* 3. Hero: entrada escalonada (--hero-i define el orden) + parallax en la imagen de fondo.
+      Se usa fill-mode "backwards" para no pisar los estados hover de los elementos. */
+@keyframes hero-rise {
+    from {
+        opacity: 0;
+        transform: translate3d(0, 22px, 0);
+    }
+}
+
+@keyframes hero-pop {
+    from {
+        opacity: 0;
+        scale: 0.6;
+    }
+}
+
+[data-hero-item] {
+    animation: hero-rise 0.85s var(--ease-reveal) backwards;
+    animation-delay: calc(var(--hero-i, 0) * 110ms + 120ms);
+}
+
+[data-hero-pop] {
+    animation: hero-pop 0.7s var(--ease-spring) 0.85s backwards;
+}
+
+.anim-ready [data-parallax] {
+    transform: translate3d(0, var(--parallax-y, 0px), 0) scale(1.25);
+    will-change: transform;
+}
+
+/* 4. Micro-interacciones de enlace: la flecha "→" se desliza al pasar el cursor. */
+a > span[aria-hidden="true"]:last-child {
+    display: inline-block;
+    transition: transform var(--dur-base) var(--ease-out-soft);
+}
+
+a:hover > span[aria-hidden="true"]:last-child,
+a:focus-visible > span[aria-hidden="true"]:last-child {
+    transform: translateX(3px);
+}
+
+/* 5. Paneles emergentes: entran con un fade + leve escala (el display lo maneja el JS). */
+@keyframes panel-in {
+    from {
+        opacity: 0;
+        transform: translateY(12px) scale(0.96);
+    }
+}
+
+#cart-panel:not(.hidden) {
+    transform-origin: top right;
+    animation: panel-in var(--dur-base) var(--ease-reveal) both;
+}
+
+#mobile-nav:not(.hidden) {
+    transform-origin: top center;
+    animation: panel-in var(--dur-base) var(--ease-reveal) both;
+}
+
+.chatbot-panel:not([hidden]) {
+    transform-origin: bottom left;
+    animation: panel-in var(--dur-base) var(--ease-reveal) both;
+}
+
+/* ===== Carrito en móvil: fondo + hoja inferior ============================
+   En pantallas pequeñas el carrito se ancla abajo (patrón "bottom sheet")
+   con un fondo oscurecido que cierra al tocarlo. En escritorio se mantiene
+   como la tarjeta flotante de siempre. */
+
+#cart-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 45;
+    background: rgba(8, 20, 32, 0.5);
+    -webkit-backdrop-filter: blur(2px);
+    backdrop-filter: blur(2px);
+    animation: fade-in var(--dur-base) var(--ease-out-soft) both;
+}
+
+#cart-backdrop.hidden {
+    display: none;
+}
+
+/* Con la hoja del carrito abierta, los botones flotantes no deben
+   interceptar el toque ni competir visualmente con la hoja. */
+body.cart-open .whatsapp-float,
+body.cart-open .chatbot-launcher,
+body.cart-open [data-scroll-top] {
+    opacity: 0;
+    pointer-events: none;
+}
+
+@keyframes fade-in {
+    from {
+        opacity: 0;
+    }
+}
+
+@keyframes sheet-in {
+    from {
+        opacity: 0;
+        transform: translateY(100%);
+    }
+}
+
+@media (max-width: 1023px) {
+    #cart-panel {
+        top: auto;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        max-width: 100%;
+        max-height: min(80dvh, 36rem);
+        border-right: 0;
+        border-bottom: 0;
+        border-radius: 1.25rem 1.25rem 0 0;
+        padding-bottom: env(safe-area-inset-bottom, 0);
+    }
+
+    /* La clase de Tailwind se ve superada por el selector de id de arriba;
+       se restaura explícitamente para que el estado cerrado siga funcionando. */
+    #cart-panel.hidden {
+        display: none;
+    }
+
+    #cart-panel > div {
+        flex: 0 0 auto;
+    }
+
+    #cart-panel > #cart-items {
+        flex: 1 1 auto;
+        min-height: 0;
+        max-height: none;
+    }
+
+    #cart-panel:not(.hidden) {
+        transform-origin: bottom center;
+        animation: sheet-in var(--dur-base) var(--ease-reveal) both;
+    }
+}
+
+/* 6. Avisos (toast) y mensajes del chat: aparecen con un desplazamiento sutil. */
+@keyframes toast-in {
+    from {
+        opacity: 0;
+        transform: translateX(18px) scale(0.98);
+    }
+}
+
+@keyframes message-in {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+}
+
+#toastContainer > div {
+    animation: toast-in var(--dur-base) var(--ease-reveal) both;
+}
+
+/* 7. Contador del carrito: pequeño rebote cuando cambia la cantidad. */
+@keyframes count-bump {
+    0% {
+        scale: 1;
+    }
+    35% {
+        scale: 1.28;
+    }
+    100% {
+        scale: 1;
+    }
+}
+
+#cart-count.is-bumped,
+#cart-count-mobile.is-bumped {
+    animation: count-bump 420ms var(--ease-spring);
+}
+
+/* 8. Carrusel: zoom lento y continuo sobre la diapositiva activa. */
+@keyframes slide-drift {
+    from {
+        transform: scale(1);
+    }
+    to {
+        transform: scale(1.06);
+    }
+}
+
+[data-carousel-slide]:not([inert]) > img {
+    animation: slide-drift 7s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* 9. "Vuela al carrito": clon de la imagen del producto que viaja hasta el icono. */
+.fly-to-cart {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 90;
+    object-fit: cover;
+    border-radius: 0.85rem;
+    box-shadow: 0 16px 34px rgba(16, 47, 85, 0.32);
+    pointer-events: none;
+    will-change: transform, opacity;
+}
+
+/* 10. Al aterrizar: rebote del icono del carrito y "pop" del botón de agregado rápido. */
+@keyframes cart-receive {
+    0% {
+        scale: 1;
+    }
+    35% {
+        scale: 1.18;
+    }
+    70% {
+        scale: 0.96;
+    }
+    100% {
+        scale: 1;
+    }
+}
+
+#cart-toggle.is-receiving,
+#cart-toggle-mobile.is-receiving {
+    animation: cart-receive 520ms var(--ease-spring);
+}
+
+@keyframes quick-add-pop {
+    0% {
+        scale: 1;
+    }
+    40% {
+        scale: 1.16;
+    }
+    100% {
+        scale: 1;
+    }
+}
+
+.product-order-link.is-added {
+    background: var(--color-field-dark);
+    border-color: var(--color-field-dark);
+    animation: quick-add-pop 420ms var(--ease-spring);
+}
+
+/* ==========================================================================
+   Refinamiento UI/UX (capa de pulido · 100% CSS)
+   No modifica estructura, clases, IDs ni el orden del DOM.
+   ========================================================================== */
+
+/* --- 11.1 Micro-interacciones: botones, enlaces y campos -------------------
+   Nota: en lugar de `transition: all .3s` (que también anima propiedades de
+   layout y provoca reflujo) se usa una lista explícita de propiedades
+   perceptibles, todas aceleradas por el compositor. */
+a,
+button,
+input,
+select,
+textarea {
+    transition:
+        color var(--dur-fast) ease,
+        background-color var(--dur-fast) ease,
+        border-color var(--dur-fast) ease,
+        box-shadow var(--dur-base) var(--ease-out-soft),
+        opacity var(--dur-fast) ease,
+        translate var(--dur-base) var(--ease-out-soft),
+        scale var(--dur-base) var(--ease-out-soft),
+        transform var(--dur-base) var(--ease-out-soft);
+}
+
+/* Feedback táctil sutil al presionar. */
+button:active,
+a[class~="rounded-full"]:active {
+    scale: 0.97;
+}
+
+/* --- 11.2 Campos de formulario: foco claro y accesible --------------------- */
+input:focus,
+select:focus,
+textarea:focus {
+    outline: none;
+    border-color: var(--color-field);
+    box-shadow: 0 0 0 3px rgba(42, 112, 52, 0.22);
+}
+
+input:hover:not(:focus),
+select:hover:not(:focus),
+textarea:hover:not(:focus) {
+    border-color: color-mix(in srgb, var(--color-field) 40%, #c9d2c0);
+}
+
+/* --- 11.3 Logotipo del encabezado: proporción, marca y aire ---------------- */
+header[data-site-header] a[aria-label="Miskylac, inicio"] {
+    gap: 0.65rem;
+}
+
+header[data-site-header] a[aria-label="Miskylac, inicio"] > span:first-child {
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 50% 50% 50% 0.55rem;
+    background-color: var(--color-field);
+    /* Icono de gota de leche en blanco (SVG embebido) sobre degradado de marca. */
+    background-image:
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%23ffffff' d='M12 2.8c-3.4 4.3-5.6 7.3-5.6 10.2a5.6 5.6 0 1 0 11.2 0c0-2.9-2.2-5.9-5.6-10.2Z'/%3E%3C/svg%3E"),
+        linear-gradient(145deg, #5aa86a 0%, var(--color-field) 55%, var(--color-field-dark) 100%);
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: 50% 50%, 100% 100%;
+    box-shadow:
+        0 6px 16px -8px rgba(30, 85, 39, 0.75),
+        inset 0 1px 0 rgba(255, 255, 255, 0.45);
+}
+
+header[data-site-header] a[aria-label="Miskylac, inicio"] > span:last-child > strong {
+    font-weight: 800;
+    letter-spacing: 0.04em;
+}
+
+header[data-site-header] a[aria-label="Miskylac, inicio"] > span:last-child > small {
+    font-weight: 600;
+    letter-spacing: 0.24em;
+    color: color-mix(in srgb, var(--color-navy) 62%, white);
+}
+
+/* --- 11.4 Logotipo del pie: coherencia con el encabezado ------------------- */
+footer .font-display > span:first-child {
+    width: 2.25rem;
+    height: 2.25rem;
+    font-size: 0; /* oculta el símbolo ✦ del marcado para usar el icono de marca */
+    border-radius: 50% 50% 50% 0.5rem;
+    background-color: var(--color-field-dark);
+    background-image:
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%23ffffff' d='M12 2.8c-3.4 4.3-5.6 7.3-5.6 10.2a5.6 5.6 0 1 0 11.2 0c0-2.9-2.2-5.9-5.6-10.2Z'/%3E%3C/svg%3E"),
+        linear-gradient(145deg, #5aa86a, var(--color-field-dark));
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: 48% 48%, 100% 100%;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.4);
+}
+
+/* --- 11.5 Ajustes de modo oscuro para lo anterior -------------------------- */
+body.dark-mode header[data-site-header] a[aria-label="Miskylac, inicio"] > span:last-child > small {
+    color: rgba(226, 236, 245, 0.62);
+}
+
+body.dark-mode input:focus,
+body.dark-mode select:focus,
+body.dark-mode textarea:focus {
+    border-color: #5aa86a;
+    box-shadow: 0 0 0 3px rgba(90, 168, 106, 0.3);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    html {
+        scroll-behavior: auto;
+    }
+
+    *,
+    *::before,
+    *::after {
+        scroll-behavior: auto !important;
+        transition-duration: 0.01ms !important;
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+    }
+
+    [data-hero-item],
+    [data-hero-pop],
+    [data-carousel-slide] > img {
+        animation: none;
+    }
+}

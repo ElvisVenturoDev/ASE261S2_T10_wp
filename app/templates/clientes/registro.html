@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+
+{% block title %}Registrarse | Santa Clara{% endblock %}
+{% block meta_description %}Crea tu cuenta en Santa Clara para hacer pedidos más rápido.{% endblock %}
+
+{% block content %}
+<section class="mx-auto max-w-3xl px-6 py-16">
+    <h1 class="font-display text-4xl text-navy">Crear cuenta</h1>
+    <p class="mt-2 text-sm text-slate-500">Regístrate con tu correo para agilizar tus pedidos.</p>
+
+    {% with mensajes = get_flashed_messages(category_filter=["error"]) %}
+      {% if mensajes %}
+      <div class="mt-5 rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-700" role="alert">
+        <ul class="list-disc space-y-1 pl-5">
+          {% for m in mensajes %}<li>{{ m }}</li>{% endfor %}
+        </ul>
+      </div>
+      {% endif %}
+    {% endwith %}
+
+    <form method="post" action="{{ url_for('auth.registro') }}" class="mt-6 space-y-4 rounded-2xl border border-slate-100 bg-white p-7 shadow-sm">
+        <label class="block text-xs font-semibold">
+            <span>Nombre completo *</span>
+            <input type="text" name="nombre" autocomplete="name" value="{{ datos.get('nombre', '') }}" required class="mt-2 block h-12 w-full rounded-xl border border-slate-300 px-4 text-sm font-normal outline-none focus:border-field focus:ring-2 focus:ring-field/20">
+        </label>
+        <label class="block text-xs font-semibold">
+            <span>Correo *</span>
+            <input type="email" name="correo" autocomplete="email" value="{{ datos.get('correo', '') }}" required class="mt-2 block h-12 w-full rounded-xl border border-slate-300 px-4 text-sm font-normal outline-none focus:border-field focus:ring-2 focus:ring-field/20">
+        </label>
+        <label class="block text-xs font-semibold">
+            <span>Celular (opcional)</span>
+            <input type="tel" name="telefono" inputmode="tel" value="{{ datos.get('telefono', '') }}" class="mt-2 block h-12 w-full rounded-xl border border-slate-300 px-4 text-sm font-normal outline-none focus:border-field focus:ring-2 focus:ring-field/20">
+        </label>
+        <label class="block text-xs font-semibold">
+            <span>Contraseña *</span>
+            <input type="password" name="password" autocomplete="new-password" required class="mt-2 block h-12 w-full rounded-xl border border-slate-300 px-4 text-sm font-normal outline-none focus:border-field focus:ring-2 focus:ring-field/20">
+        </label>
+        <label class="block text-xs font-semibold">
+            <span>Confirmar contraseña *</span>
+            <input type="password" name="confirmar_password" autocomplete="new-password" required class="mt-2 block h-12 w-full rounded-xl border border-slate-300 px-4 text-sm font-normal outline-none focus:border-field focus:ring-2 focus:ring-field/20">
+        </label>
+        <button class="w-full rounded-full bg-navy py-3 text-sm font-bold text-white hover:bg-navy-dark" type="submit">Crear cuenta</button>
+    </form>
+
+    <p class="mt-5 text-center text-sm text-slate-500">
+        ¿Ya tienes cuenta?
+        <a href="{{ url_for('login.login') }}" class="font-bold text-field-dark hover:underline">Inicia sesión</a>
+    </p>
+</section>
+{% endblock %}

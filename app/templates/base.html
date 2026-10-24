@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="{% block meta_description %}Miskylac - productos lácteos frescos, naturales y nutritivos.{% endblock %}">
+    <title>{% block title %}Miskylac{% endblock %}</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&family=Playfair+Display:ital,wght@0,600;0,700;0,800;1,500;1,600&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/output.css', v='animations-12') }}">
+    <script>
+        (function () {
+            // Las animaciones de scroll solo se activan con JS y sin 'reducir movimiento'.
+            if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) { return; }
+            var root = document.documentElement;
+            root.classList.add('anim-ready');
+            // Red de seguridad: si animaciones.js no carga, el contenido no debe quedar oculto.
+            window.setTimeout(function () { if (!window.__animReady) { root.classList.remove('anim-ready'); } }, 4000);
+        })();
+    </script>
+    {% block extra_head %}{% endblock %}
+</head>
+<body class="bg-paper text-slate-800 font-sans antialiased">
+    <script>
+        try {
+            if (localStorage.getItem("santaclara-theme") === "dark") {
+                document.body.classList.add("dark-mode");
+            }
+        } catch {
+            // El tema predeterminado sigue disponible si el navegador bloquea el almacenamiento.
+        }
+    </script>
+    <div class="scroll-progress" data-scroll-progress aria-hidden="true"></div>
+
+    <header data-site-header class="sticky top-0 z-50 bg-white/95 backdrop-blur border-b border-slate-200">
+        <div class="mx-auto flex h-[72px] max-w-6xl items-center justify-between gap-3 px-3 sm:px-6">
+            <a href="{{ url_for('inicio.index') }}" class="flex min-w-0 items-center gap-3" aria-label="Miskylac, inicio">
+                <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full rounded-br-sm bg-field text-xl text-white"></span>
+                <span class="min-w-0 leading-none">
+                    <strong class="block truncate text-lg tracking-[0.12em] text-navy">Miskylac</strong>
+                    <small class="block truncate text-[9px] tracking-[0.3em] text-slate-500">PURO ORIGEN</small>
+                </span>
+            </a>
+
+            <nav class="hidden items-center gap-1 lg:flex" aria-label="Navegación principal">
+                <a href="{{ url_for('inicio.index') }}"
+                   class="rounded-xl px-4 py-2.5 text-[11px] font-bold uppercase tracking-wider transition-colors duration-200 hover:bg-slate-100 {% if request.path == '/' %}bg-slate-100 text-navy{% else %}text-slate-500 hover:text-navy{% endif %}" data-i18n="nav.home">Inicio</a>
+                <a href="{{ url_for('nosotros.nosotros') }}"
+                   class="rounded-xl px-4 py-2.5 text-[11px] font-bold uppercase tracking-wider transition-colors duration-200 hover:bg-slate-100 {% if '/nosotros' in request.path %}bg-slate-100 text-navy{% else %}text-slate-500 hover:text-navy{% endif %}" data-i18n="nav.about">Nosotros</a>
+                <a href="{{ url_for('productos.productos') }}"
+                   class="rounded-xl px-4 py-2.5 text-[11px] font-bold uppercase tracking-wider transition-colors duration-200 hover:bg-slate-100 {% if '/productos' in request.path %}bg-slate-100 text-navy{% else %}text-slate-500 hover:text-navy{% endif %}" data-i18n="nav.products">Productos</a>
+                <a href="{{ url_for('contacto.contacto') }}"
+                   class="rounded-xl px-4 py-2.5 text-[11px] font-bold uppercase tracking-wider transition-colors duration-200 hover:bg-slate-100 {% if '/contacto' in request.path %}bg-slate-100 text-navy{% else %}text-slate-500 hover:text-navy{% endif %}" data-i18n="nav.contact">Contacto</a>
+            </nav>
+
+            <div class="hidden items-center gap-2 lg:flex">
+                <button id="btnThemeToggle" data-theme-toggle type="button" class="flex h-9 w-9 items-center justify-center rounded-full border border-slate-200 text-navy transition hover:bg-slate-50" aria-label="Cambiar tema" title="Cambiar tema">
+                    <span data-theme-icon aria-hidden="true">☀️</span>
+                </button>
+                <button type="button" data-lang-toggle class="flex items-center gap-1 rounded-full border border-slate-200 bg-slate-50 px-2.5 py-1.5 text-[10px] font-bold uppercase tracking-[0.2em] text-navy transition hover:bg-slate-100" aria-label="Cambiar idioma">
+                    <span data-lang-current>ES</span>
+                    <span class="text-slate-400">/</span>
+                    <span class="text-slate-500">EN</span>
+                </button>
+                <div class="relative">
+                    <button id="cart-toggle" type="button" class="relative flex h-9 w-9 items-center justify-center rounded-full border border-slate-200 text-navy transition hover:bg-slate-50" aria-label="Ver carrito" aria-expanded="false">
+                        <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
+                        <span id="cart-count" class="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-field text-[10px] font-bold text-white hidden">0</span>
+                    </button>
+                </div>
+                {% if session.get('cliente_nombre') %}
+                <a href="{{ url_for('login.logout') }}" class="rounded-full border border-navy/20 px-5 py-2.5 text-[11px] font-bold text-navy transition duration-200 hover:-translate-y-0.5 hover:bg-slate-100">Salir ({{ session.get('cliente_nombre') }})</a>
+                {% else %}
+                <a href="{{ url_for('login.login') }}" class="rounded-full border border-navy/20 px-5 py-2.5 text-[11px] font-bold text-navy transition duration-200 hover:-translate-y-0.5 hover:bg-slate-100">Iniciar sesión</a>
+                <a href="{{ url_for('auth.registro') }}" class="rounded-full border border-navy/20 px-5 py-2.5 text-[11px] font-bold text-navy transition duration-200 hover:-translate-y-0.5 hover:bg-slate-100">Registrarse</a>
+                {% endif %}
+                <a href="{{ url_for('formulario.formulario') }}" class="rounded-full bg-navy px-5 py-2.5 text-[11px] font-bold text-white transition duration-200 hover:-translate-y-0.5 hover:bg-navy-dark hover:shadow-lg" data-i18n="nav.order">Hacer pedido <span aria-hidden="true">→</span></a>
+            </div>
+            <div class="flex shrink-0 items-center gap-1 lg:hidden">
+                <button type="button" data-theme-toggle class="flex h-9 w-9 items-center justify-center rounded-full border border-slate-200 text-base text-navy transition hover:bg-slate-50" aria-label="Cambiar tema" title="Cambiar tema">
+                    <span data-theme-icon aria-hidden="true">☀️</span>
+                </button>
+                <button type="button" data-lang-toggle class="flex h-9 w-9 items-center justify-center rounded-full border border-slate-200 text-[10px] font-bold uppercase text-navy transition hover:bg-slate-50" aria-label="Cambiar idioma" title="Cambiar idioma">
+                    <span data-lang-current>ES</span>
+                </button>
+                <button id="cart-toggle-mobile" type="button" class="relative flex h-9 w-9 items-center justify-center rounded-full border border-slate-200 text-navy transition hover:bg-slate-50" aria-label="Ver carrito" aria-expanded="false">
+                    <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
+                    <span id="cart-count-mobile" class="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-field text-[10px] font-bold text-white hidden">0</span>
+                </button>
+                <button id="menu-btn" type="button" class="flex h-9 w-9 items-center justify-center rounded-full border border-slate-200 text-lg leading-none text-navy transition hover:bg-slate-50" aria-label="Abrir menú" aria-expanded="false" aria-controls="mobile-nav">☰</button>
+            </div>
+        </div>
+        <nav id="mobile-nav" class="hidden border-t border-slate-100 bg-white px-6 py-4 lg:hidden" aria-label="Menú móvil">
+            <div class="flex flex-col gap-1 text-sm font-semibold">
+                <a href="{{ url_for('inicio.index') }}" class="rounded-lg px-3 py-2.5 hover:bg-slate-50" data-i18n="nav.home">Inicio</a>
+                <a href="{{ url_for('nosotros.nosotros') }}" class="rounded-lg px-3 py-2.5 hover:bg-slate-50" data-i18n="nav.about">Nosotros</a>
+                <a href="{{ url_for('productos.productos') }}" class="rounded-lg px-3 py-2.5 hover:bg-slate-50" data-i18n="nav.products">Productos</a>
+                <a href="{{ url_for('contacto.contacto') }}" class="rounded-lg px-3 py-2.5 hover:bg-slate-50" data-i18n="nav.contact">Contacto</a>
+                <button id="btnThemeToggleMobile" data-theme-toggle type="button" class="flex items-center gap-2 rounded-lg px-3 py-2.5 text-left hover:bg-slate-50" aria-label="Cambiar tema" title="Cambiar tema">
+                    <span data-theme-icon aria-hidden="true">☀️</span>
+                    <span data-i18n="theme.toggle">Cambiar tema</span>
+                </button>
+                <button data-lang-toggle type="button" class="flex items-center gap-2 rounded-lg px-3 py-2.5 text-left hover:bg-slate-50" aria-label="Cambiar idioma" title="Cambiar idioma">
+                    <span aria-hidden="true">🌐</span>
+                    <span data-i18n="lang.toggle">Cambiar idioma</span>
+                    <span class="ml-auto text-[10px] font-bold uppercase tracking-[0.2em] text-slate-500" data-lang-current>ES</span>
+                </button>
+                {% if session.get('cliente_nombre') %}
+                <a href="{{ url_for('login.logout') }}" class="mt-2 block rounded-full border border-navy/20 px-5 py-3 text-center font-bold text-navy">Salir ({{ session.get('cliente_nombre') }})</a>
+                {% else %}
+                <a href="{{ url_for('login.login') }}" class="mt-2 block rounded-full border border-navy/20 px-5 py-3 text-center font-bold text-navy">Iniciar sesión</a>
+                <a href="{{ url_for('auth.registro') }}" class="mt-2 block rounded-full border border-navy/20 px-5 py-3 text-center font-bold text-navy">Registrarse</a>
+                {% endif %}
+                <a href="{{ url_for('formulario.formulario') }}" class="mt-2 rounded-full bg-navy px-5 py-3 text-center text-white" data-i18n="nav.order">Hacer pedido →</a>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        {% with mensajes = get_flashed_messages(category_filter=["ok"]) %}
+          {% if mensajes %}
+          <div class="mx-auto max-w-6xl px-6 pt-6">
+            {% for m in mensajes %}
+            <div class="rounded-xl bg-emerald-50 p-4 text-sm text-emerald-800" role="status" aria-live="polite">{{ m }}</div>
+            {% endfor %}
+          </div>
+          {% endif %}
+        {% endwith %}
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="bg-navy text-white">
+        <div class="mx-auto grid max-w-6xl gap-10 px-6 py-14 md:grid-cols-4">
+            <div>
+                <p class="flex items-center gap-2 font-display text-2xl"><span class="flex h-8 w-8 items-center justify-center rounded-full rounded-br-sm bg-field text-base">✦</span> Miskylac</p>
+                <p class="mt-3 text-sm leading-relaxed text-white/70">Productos lácteos frescos, naturales y nutritivos. De nuestro campo a tu hogar.</p>
+                <div class="mt-4 flex gap-2">
+                    <a href="#" aria-label="Facebook" class="flex h-9 w-9 items-center justify-center rounded-full bg-white/10 hover:bg-white/20">f</a>
+                    <a href="#" aria-label="Instagram" class="flex h-9 w-9 items-center justify-center rounded-full bg-white/10 hover:bg-white/20">◎</a>
+                    <a href="#" aria-label="WhatsApp" class="flex h-9 w-9 items-center justify-center rounded-full bg-white/10 hover:bg-white/20"><svg class="h-4 w-4" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12.04 2A9.96 9.96 0 0 0 3.18 18.88L2 22l3.2-1.14A9.96 9.96 0 1 0 12.04 2zm5.83 14.16c-.25.7-1.44 1.33-1.99 1.41-.51.07-1.17.1-1.88-.12-.44-.13-1-.33-1.73-.64-3.04-1.31-5.03-4.39-5.18-4.6-.15-.2-1.23-1.64-1.23-3.13s.78-2.22 1.05-2.52c.27-.3.6-.38.8-.38h.58c.19 0 .44-.07.68.51.25.59.84 2.06.91 2.2.08.14.13.32.03.52-.1.2-.15.32-.3.5-.15.18-.32.4-.45.53-.15.15-.3.32-.13.62.17.3.76 1.26 1.63 2.04.03.03.2.14.34.05.53-.33.8-.92 1.08-1.34.2-.3.42-.25.7-.18.28.08 1.8.85 2.11 1.31.15.51.23.59.35.07.13.07.75-.18 1.45z"/></svg></a>
+                </div>
+            </div>
+            <div>
+                <h3 class="text-xs font-bold uppercase tracking-[0.2em] text-white/60" data-i18n="footer.explore">Explora</h3>
+                <ul class="mt-4 space-y-2.5 text-sm">
+                    <li><a class="hover:underline" href="{{ url_for('inicio.index') }}" data-i18n="nav.home">Inicio</a></li>
+                    <li><a class="hover:underline" href="{{ url_for('nosotros.nosotros') }}" data-i18n="nav.about">Nosotros</a></li>
+                    <li><a class="hover:underline" href="{{ url_for('productos.productos') }}" data-i18n="footer.catalog">Catálogo de productos</a></li>
+                    <li><a class="hover:underline" href="{{ url_for('formulario.formulario') }}" data-i18n="footer.orderForm">Formulario de pedidos</a></li>
+                    <li><a class="hover:underline" href="{{ url_for('contacto.contacto') }}" data-i18n="nav.contact">Contacto</a></li>
+                </ul>
+            </div>
+            <div>
+                <h3 class="text-xs font-bold uppercase tracking-[0.2em] text-white/60" data-i18n="footer.contact">Contacto</h3>
+                <ul class="mt-4 space-y-2.5 text-sm text-white/85">
+                    <li>📍 Santa Clara, Lambayeque, Perú</li>
+                    <li>📞 +51 908 540 311</li>
+                    <li>📧 elvis.venturo@vallegrande.edu.pe</li>
+                    <li><a class="text-emerald-300 hover:underline" href="{{ url_for('contacto.contacto') }}" data-i18n="footer.contactUs">Escríbenos aquí →</a></li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="border-t border-white/15">
+            <div class="mx-auto flex max-w-6xl flex-col items-center justify-between gap-2 px-6 py-5 text-xs text-white/60 sm:flex-row">
+                <p>© 2026 Miskylac · Asociación de Mujeres Mi Santa Clara</p>
+                <p>Fresco, natural y cerca de ti.</p>
+            </div>
+        </div>
+    </footer>
+    <div id="toastContainer" aria-live="polite" class="pointer-events-none fixed right-5 top-24 z-[60] flex w-[min(320px,calc(100vw-2rem))] flex-col gap-3"></div>
+    <button type="button" data-scroll-top class="fixed bottom-24 right-5 z-50 hidden h-12 w-12 items-center justify-center rounded-full border border-slate-200 bg-white text-lg text-navy shadow-lg transition hover:-translate-y-0.5" aria-label="Volver arriba">↑</button>
+    <a href="https://wa.me/51908540311?text=Hola%20Miskylac%2C%20quiero%20hacer%20un%20pedido"
+       class="whatsapp-float fixed z-50 flex h-13 w-13 items-center justify-center rounded-full bg-[#25d366] p-3.5 text-2xl text-white shadow-xl hover:scale-105"
+       style="height:52px;width:52px" aria-label="Escríbenos por WhatsApp"><svg class="h-7 w-7" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12.04 2A9.96 9.96 0 0 0 3.18 18.88L2 22l3.2-1.14A9.96 9.96 0 1 0 12.04 2zm5.83 14.16c-.25.7-1.44 1.33-1.99 1.41-.51.07-1.17.1-1.88-.12-.44-.13-1-.33-1.73-.64-3.04-1.31-5.03-4.39-5.18-4.6-.15-.2-1.23-1.64-1.23-3.13s.78-2.22 1.05-2.52c.27-.3.6-.38.8-.38h.58c.19 0 .44-.07.68.51.25.59.84 2.06.91 2.2.08.14.13.32.03.52-.1.2-.15.32-.3.5-.15.18-.32.4-.45.53-.15.15-.3.32-.13.62.17.3.76 1.26 1.63 2.04.03.03.2.14.34.05.53-.33.8-.92 1.08-1.34.2-.3.42-.25.7-.18.28.08 1.8.85 2.11 1.31.15.51.23.59.35.07.13.07.75-.18 1.45z"/></svg></a>
+
+    <!-- Fondo oscurecido del carrito (solo móvil: el panel se muestra como hoja inferior) -->
+    <div id="cart-backdrop" class="hidden" aria-hidden="true"></div>
+
+    <!-- Panel del carrito -->
+    <div id="cart-panel" class="fixed right-4 top-20 z-50 w-80 max-w-[calc(100vw-2rem)] rounded-2xl border border-slate-200 bg-white shadow-2xl hidden" role="dialog" aria-label="Carrito de compras">
+        <div class="flex items-center justify-between border-b border-slate-100 px-5 py-4">
+            <h2 class="text-sm font-bold text-navy" data-i18n="cart.panelTitle">Tu carrito</h2>
+            <button id="cart-close" type="button" class="text-slate-400 transition hover:text-navy" aria-label="Cerrar carrito">
+                <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg>
+            </button>
+        </div>
+        <div id="cart-items" class="max-h-80 overflow-y-auto px-4 py-3 space-y-3"></div>
+        <div class="border-t border-slate-100 px-5 py-4">
+            <div class="flex items-center justify-between">
+                <span class="text-sm font-semibold text-slate-600" data-i18n="cart.total">Total</span>
+                <span id="cart-total" class="text-lg font-bold text-navy">S/ 0.00</span>
+            </div>
+            <button id="cart-checkout" type="button" data-checkout-url="{{ url_for('formulario.formulario') }}" disabled class="mt-4 flex w-full items-center justify-center gap-2 rounded-full bg-navy px-5 py-3 text-xs font-bold text-white transition hover:bg-navy-dark disabled:cursor-not-allowed disabled:opacity-50">
+                <span data-i18n="cart.checkout">Proceder al pedido</span>
+                <span aria-hidden="true">→</span>
+            </button>
+        </div>
+    </div>
+
+    <button id="chatbot-toggle" class="chatbot-launcher" type="button" aria-label="Abrir asistente de Miskylac" data-i18n-aria="chat.open" aria-expanded="false" aria-controls="chatbot-panel" title="Miskylac assistant">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M20 11.5a7.5 7.5 0 0 1-7.5 7.5 8 8 0 0 1-3.2-.65L4 20l1.65-4.3A7.5 7.5 0 1 1 20 11.5Z"/><path d="M8.5 11.5h.01M12.5 11.5h.01M16.5 11.5h.01" stroke-linecap="round" stroke-width="2.5"/></svg>
+    </button>
+    <section id="chatbot-panel" class="chatbot-panel" role="dialog" aria-labelledby="chatbot-title" aria-describedby="chatbot-subtitle" data-catalog-url="{{ url_for('productos.productos') }}" data-order-url="{{ url_for('formulario.formulario') }}" data-contact-url="{{ url_for('contacto.contacto') }}" data-whatsapp-url="https://wa.me/51908540311?text=Hola%20Miskylac" hidden>
+        <header class="chatbot-header">
+            <div>
+                <h2 id="chatbot-title" data-i18n="chat.title">Asistente milky</h2>
+                <p id="chatbot-subtitle"><span class="chatbot-status" aria-hidden="true"></span><span data-i18n="chat.subtitle">Ayuda rápida sobre nuestros productos</span></p>
+            </div>
+            <button id="chatbot-close" class="chatbot-close" type="button" aria-label="Cerrar chat" data-i18n-aria="chat.close">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m18 6-12 12M6 6l12 12"/></svg>
+            </button>
+        </header>
+        <div class="chatbot-messages" data-chat-messages role="log" aria-live="polite" aria-relevant="additions"></div>
+        <div class="chatbot-suggestions" data-chat-suggestions>
+            <button type="button" data-chat-prompt="products" data-i18n="chat.products">Ver productos</button>
+            <button type="button" data-chat-prompt="order" data-i18n="chat.order">Hacer un pedido</button>
+            <button type="button" data-chat-prompt="delivery" data-i18n="chat.delivery">Entrega y pago</button>
+        </div>
+        <form class="chatbot-form" data-chat-form>
+            <label class="sr-only" for="chatbot-input" data-i18n="chat.input">Escribe tu pregunta...</label>
+            <input id="chatbot-input" data-chat-input type="text" maxlength="400" autocomplete="off" data-i18n-placeholder="chat.input" placeholder="Escribe tu pregunta..." required>
+            <button type="submit" aria-label="Enviar mensaje" data-i18n-aria="chat.send">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/></svg>
+            </button>
+        </form>
+        <p class="chatbot-disclaimer" data-i18n="chat.disclaimer">Asistente automático de ayuda</p>
+    </section>
+
+    <script>
+        // Menú móvil (hamburguesa). El carrito se gestiona en cart.js.
+        const menuBtn = document.getElementById('menu-btn');
+        const mobileNav = document.getElementById('mobile-nav');
+
+        menuBtn?.addEventListener('click', () => {
+            const open = mobileNav.classList.toggle('hidden');
+            menuBtn.setAttribute('aria-expanded', String(!open));
+            menuBtn.setAttribute('aria-label', open ? 'Abrir menú' : 'Cerrar menú');
+            // Evita tener el menú y el carrito abiertos a la vez.
+            if (!open) {
+                document.dispatchEvent(new CustomEvent('miskylac:close-cart'));
+            }
+        });
+
+        mobileNav?.querySelectorAll('a').forEach((link) => {
+            link.addEventListener('click', () => {
+                mobileNav.classList.add('hidden');
+                menuBtn?.setAttribute('aria-expanded', 'false');
+                menuBtn?.setAttribute('aria-label', 'Abrir menú');
+            });
+        });
+    </script>
+    <script defer src="{{ url_for('static', filename='js/funcionalidad.js', v='hero-carousel-1') }}"></script>
+    <script defer src="{{ url_for('static', filename='js/cart.js', v='animations-12') }}"></script>
+    <script defer src="{{ url_for('static', filename='js/anmaciones.js', v='animations-12') }}"></script>
+    <script defer src="{{ url_for('static', filename='js/chatbot.js', v='animations-12') }}"></script>
+    {% block scripts %}{% endblock %}
+</body>
+</html>
