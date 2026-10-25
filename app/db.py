@@ -18,8 +18,6 @@ def _env(name, default=None):
 
 def get_db():
     if "db" not in g:
-        ssl_cfg = {"ssl": True}
-        
         g.db = pymysql.connect(
             host=_env("DB_HOST"),
             port=int(_env("DB_PORT")),
@@ -29,7 +27,6 @@ def get_db():
             charset="utf8mb4",
             cursorclass=DictCursor,
             autocommit=False,
-            ssl=ssl_cfg
         )
     return g.db
 
