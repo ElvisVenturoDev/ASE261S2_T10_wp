@@ -25,20 +25,23 @@ def login():
             return render_template("clientes/login.html", datos=request.form), 400
 
         resultado = query(
-            "SELECT identificador, nombre, password_hash FROM cliente WHERE correo = %s",
+            "SELECT u.identificador_cliente, u.password_hash, u.rol, c.nombre "
+            "FROM usuario u "
+            "LEFT JOIN cliente c ON c.identificador = u.identificador_cliente "
+            "WHERE u.correo = %s AND u.activo = 1",
             (correo,),
         )
 
-        cliente = resultado[0] if resultado else None
-        if not cliente or not cliente.get("password_hash") or not check_password_hash(
-            cliente["password_hash"], password
-        ):
+        usuario = resultado[0] if resultado else None
+        if not usuario or not check_password_hash(usuario["password_hash"], password):
             flash("Correo o contraseña incorrectos.", "error")
             return render_template("clientes/login.html", datos=request.form), 400
 
-        session["cliente_id"] = cliente["identificador"]
-        session["cliente_nombre"] = cliente["nombre"]
-        flash(f"¡Hola de nuevo, {cliente['nombre']}! Sesión iniciada.", "ok")
+        nombre = usuario["nombre"] or "Administrador"
+        session["cliente_id"] = usuario["identificador_cliente"]
+        session["cliente_nombre"] = nombre
+        session["rol"] = usuario["rol"]
+        flash(f"¡Hola de nuevo, {nombre}! Sesión iniciada.", "ok")
         return redirect(url_for("inicio.index"))
 
     return render_template("clientes/login.html", datos={})

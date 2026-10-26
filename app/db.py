@@ -11,7 +11,7 @@ def _env(name, default=None):
     if value is None or value == "":
         raise RuntimeError(
             f"Falta la variable de entorno {name}. Revisa tu archivo .env "
-            "(usa .env.example como plantilla)."
+            "y completa las variables requeridas en el README."
         )
     return value
 
@@ -44,7 +44,7 @@ def query(sql, params=()):
 
 
 def init_db():
-    get_db()  # Las tablas las crea Docker (01_schema.sql)
+    get_db()  # El esquema se administra externamente desde MySQL Workbench.
 
 
 def init_app(app):

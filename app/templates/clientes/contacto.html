@@ -49,16 +49,16 @@
             <div class="grid gap-4 sm:grid-cols-2">
                 <label class="block text-xs font-semibold">
                     <span data-i18n="contact.form.name">Nombre *</span>
-                    <input type="text" name="nombre" autocomplete="name" value="{{ request.form.get('nombre', '') }}" required class="mt-2 block h-12 w-full rounded-xl border border-slate-300 px-4 text-sm font-normal outline-none focus:border-field focus:ring-2 focus:ring-field/20">
+                    <input type="text" name="nombre" autocomplete="name" maxlength="80" value="{{ request.form.get('nombre', '') }}" required class="mt-2 block h-12 w-full rounded-xl border border-slate-300 px-4 text-sm font-normal outline-none focus:border-field focus:ring-2 focus:ring-field/20">
                 </label>
                 <label class="block text-xs font-semibold">
                     <span data-i18n="contact.form.phone">Celular *</span>
-                    <input type="tel" name="celular" autocomplete="tel" inputmode="tel" value="{{ request.form.get('celular', '') }}" required class="mt-2 block h-12 w-full rounded-xl border border-slate-300 px-4 text-sm font-normal outline-none focus:border-field focus:ring-2 focus:ring-field/20">
+                    <input type="tel" name="celular" autocomplete="tel" inputmode="tel" maxlength="15" value="{{ request.form.get('celular', '') }}" required class="mt-2 block h-12 w-full rounded-xl border border-slate-300 px-4 text-sm font-normal outline-none focus:border-field focus:ring-2 focus:ring-field/20">
                 </label>
             </div>
             <label class="block text-xs font-semibold">
                 <span data-i18n="contact.form.email">Correo</span>
-                <input type="email" name="correo" autocomplete="email" value="{{ request.form.get('correo', '') }}" class="mt-2 block h-12 w-full rounded-xl border border-slate-300 px-4 text-sm font-normal outline-none focus:border-field focus:ring-2 focus:ring-field/20">
+                <input type="email" name="correo" autocomplete="email" maxlength="120" value="{{ request.form.get('correo', '') }}" class="mt-2 block h-12 w-full rounded-xl border border-slate-300 px-4 text-sm font-normal outline-none focus:border-field focus:ring-2 focus:ring-field/20">
             </label>
             <label class="block text-xs font-semibold">
                 <span data-i18n="contact.form.asunto">Asunto</span>
@@ -71,7 +71,7 @@
             </label>
             <label class="block text-xs font-semibold">
                 <span data-i18n="contact.form.message">Mensaje *</span>
-                <textarea name="mensaje" rows="4" required data-i18n-placeholder="contact.form.messagePlaceholder" placeholder="Cuéntanos qué necesitas..." class="mt-2 block w-full rounded-xl border border-slate-300 px-4 py-2.5 text-sm font-normal outline-none focus:border-field focus:ring-2 focus:ring-field/20">{{ request.form.get('mensaje', '') }}</textarea>
+                <textarea name="mensaje" rows="4" maxlength="5000" required data-i18n-placeholder="contact.form.messagePlaceholder" placeholder="Cuéntanos qué necesitas..." class="mt-2 block w-full rounded-xl border border-slate-300 px-4 py-2.5 text-sm font-normal outline-none focus:border-field focus:ring-2 focus:ring-field/20">{{ request.form.get('mensaje', '') }}</textarea>
             </label>
             <button class="w-full rounded-full bg-navy py-3 text-sm font-bold text-white hover:bg-navy-dark" type="submit" data-i18n="contact.form.send">Enviar mensaje →</button>
         </form>

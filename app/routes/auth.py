@@ -35,7 +35,9 @@ def registro():
             errores.append("Las contraseñas no coinciden.")
 
         if not errores:
-            existente = query("SELECT identificador FROM cliente WHERE correo = %s", (correo,))
+            existente = query(
+                "SELECT identificador FROM usuario WHERE correo = %s", (correo,)
+            )
             if existente:
                 errores.append("Ya existe una cuenta con ese correo.")
 
@@ -47,17 +49,36 @@ def registro():
         db = get_db()
         try:
             with db.cursor() as cur:
+                # Si el correo ya hizo un pedido sin cuenta, se reutiliza ese cliente
                 cur.execute(
-                    "INSERT INTO cliente (nombre, telefono, correo, password_hash) "
-                    "VALUES (%s, %s, %s, %s)",
-                    (nombre, telefono, correo, generate_password_hash(password)),
+                    "SELECT identificador FROM cliente WHERE correo = %s", (correo,)
                 )
-                id_cliente = cur.lastrowid
+                fila = cur.fetchone()
+                if fila:
+                    id_cliente = fila["identificador"]
+                    cur.execute(
+                        "UPDATE cliente SET nombre = %s, telefono = %s "
+                        "WHERE identificador = %s",
+                        (nombre, telefono or None, id_cliente),
+                    )
+                else:
+                    cur.execute(
+                        "INSERT INTO cliente (nombre, telefono, correo) "
+                        "VALUES (%s, %s, %s)",
+                        (nombre, telefono or None, correo),
+                    )
+                    id_cliente = cur.lastrowid
+                    cur.execute(
+                        "INSERT INTO detalle_cliente "
+                        "(identificador_cliente, direccion, tipo_cliente, fecha_registro) "
+                        "VALUES (%s, %s, %s, %s)",
+                        (id_cliente, "Sin dirección", "Minorista", date.today()),
+                    )
+
                 cur.execute(
-                    "INSERT INTO detalle_cliente "
-                    "(identificador_cliente, direccion, tipo_cliente, fecha_registro) "
-                    "VALUES (%s, %s, %s, %s)",
-                    (id_cliente, "Sin dirección", "Minorista", date.today()),
+                    "INSERT INTO usuario (identificador_cliente, correo, password_hash) "
+                    "VALUES (%s, %s, %s)",
+                    (id_cliente, correo, generate_password_hash(password)),
                 )
             db.commit()
         except pymysql.err.IntegrityError:

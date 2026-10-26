@@ -60,9 +60,13 @@ def validar_pedido(f):
                 errores.append("El carrito está vacío.")
             else:
                 for item in cart_items:
+                    if not isinstance(item, dict):
+                        errores.append("Error al procesar los productos del carrito.")
+                        break
                     if item.get("name") not in _productos_validos():
                         errores.append(f"Producto no válido: {item.get('name', 'desconocido')}.")
-                    if not isinstance(item.get("quantity"), int) or item.get("quantity", 0) < 1:
+                    cantidad = item.get("quantity")
+                    if type(cantidad) is not int or cantidad < 1:
                         errores.append("Las cantidades deben ser números enteros de 1 o más.")
         except (json.JSONDecodeError, TypeError):
             errores.append("Error al procesar los productos del carrito.")
@@ -79,10 +83,20 @@ def validar_pedido(f):
     if entrega not in ENTREGAS_VALIDAS:
         errores.append("Selecciona una modalidad de entrega.")
 
+    if entrega == "entrega_domicilio":
+        if not f.get("direccion", "").strip():
+            errores.append("Ingresa la dirección de entrega.")
+        if not f.get("distrito", "").strip():
+            errores.append("Ingresa el distrito o localidad.")
+    if len(f.get("direccion", "").strip()) > 120:
+        errores.append("La dirección no puede superar 120 caracteres.")
+    if len(f.get("distrito", "").strip()) > 60:
+        errores.append("El distrito no puede superar 60 caracteres.")
+
     if len(comentarios) > 300:
         errores.append("Los comentarios no pueden superar 300 caracteres.")
 
-    if "confirmacion" in f and not f.get("confirmacion"):
+    if not f.get("confirmacion"):
         errores.append("Debes aceptar los términos para enviar el pedido.")
 
     return errores
@@ -104,57 +118,54 @@ def guardar_pedido(f):
     entrega = f.get("entrega", "entrega_domicilio")
     if entrega == "recogida":
         direccion = "Recojo en tienda"
+        distrito = None
     else:
-        direccion = (f.get("direccion", "").strip() + " " + f.get("distrito", "").strip()).strip()
-        direccion = direccion or "Sin dirección"
+        direccion = f.get("direccion", "").strip()
+        distrito = f.get("distrito", "").strip()
+    comentarios = f.get("comentarios", "").strip() or None
 
     db = get_db()
     try:
         with db.cursor() as cur:
-            cur.execute("SHOW COLUMNS FROM cliente")
-            cliente_tiene_correo = any(
-                columna["Field"] == "correo" for columna in cur.fetchall()
-            )
-
             # 1. Buscar cliente existente (por correo o teléfono) o crearlo
-            if cliente_tiene_correo:
-                cur.execute(
-                    "SELECT identificador FROM cliente "
-                    "WHERE (correo = %s AND %s IS NOT NULL) OR telefono = %s LIMIT 1",
-                    (correo, correo, telefono),
-                )
-            else:
-                cur.execute(
-                    "SELECT identificador FROM cliente WHERE telefono = %s LIMIT 1",
-                    (telefono,),
-                )
+            cur.execute(
+                "SELECT identificador FROM cliente "
+                "WHERE (correo = %s AND %s IS NOT NULL) OR telefono = %s LIMIT 1",
+                (correo, correo, telefono),
+            )
             fila = cur.fetchone()
             if fila:
                 id_cliente = fila["identificador"]
             else:
-                if cliente_tiene_correo:
-                    cur.execute(
-                        "INSERT INTO cliente (nombre, telefono, correo) "
-                        "VALUES (%s, %s, %s)",
-                        (nombre, telefono, correo),
-                    )
-                else:
-                    cur.execute(
-                        "INSERT INTO cliente (nombre, telefono) VALUES (%s, %s)",
-                        (nombre, telefono),
-                    )
-                id_cliente = cur.lastrowid
                 cur.execute(
-                    "INSERT INTO detalle_cliente "
-                    "(identificador_cliente, direccion, tipo_cliente, fecha_registro) "
-                    "VALUES (%s, %s, %s, %s)",
-                    (id_cliente, direccion, "Minorista", date.today()),
+                    "INSERT INTO cliente (nombre, telefono, correo) "
+                    "VALUES (%s, %s, %s)",
+                    (nombre, telefono, correo),
                 )
+                id_cliente = cur.lastrowid
+
+            cur.execute(
+                "INSERT INTO detalle_cliente "
+                "(identificador_cliente, direccion, distrito, tipo_cliente, fecha_registro) "
+                "VALUES (%s, %s, %s, %s, %s) "
+                "ON DUPLICATE KEY UPDATE direccion = VALUES(direccion), "
+                "distrito = VALUES(distrito)",
+                (id_cliente, direccion, distrito, "Minorista", date.today()),
+            )
 
             # 2. Crear la venta
             cur.execute(
-                "INSERT INTO venta (fecha, identificador_cliente) VALUES (%s, %s)",
-                (date.today(), id_cliente),
+                "INSERT INTO venta "
+                "(fecha, identificador_cliente, tipo_entrega, direccion_entrega, "
+                "distrito, comentarios) VALUES (%s, %s, %s, %s, %s, %s)",
+                (
+                    date.today(),
+                    id_cliente,
+                    entrega,
+                    direccion,
+                    distrito,
+                    comentarios,
+                ),
             )
             id_venta = cur.lastrowid
 
